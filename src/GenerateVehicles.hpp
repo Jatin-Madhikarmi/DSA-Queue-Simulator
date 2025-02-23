@@ -8,6 +8,9 @@ class Vehicles
     void Draw();
 
     private:
+    int speed;
+    int size;
+
     int DL3x;//Represents the x-coordinate of the lane DL3
     int DL3y;//Represents the y-coordinates of the lane DL3
     int DL3Speed;//Represents the speed of the vehicles that turns left
@@ -18,6 +21,5 @@ class Vehicles
     int DL2Oy;//Represents the y-cordiante of the lane DL2 and O represetsn the outgoing vehicles.
     int DL2OSpeed;
     bool DL2OActive=true;
-    int speed;
-    int size;
+
 };
