@@ -16,8 +16,8 @@ int main()
     while(WindowShouldClose()==false)
     {
         lanes.Draw();
-        vehicles.Update();
         vehicles.Draw();
+        vehicles.Update();
         BeginDrawing();
         ClearBackground(BLACK);
         EndDrawing();
