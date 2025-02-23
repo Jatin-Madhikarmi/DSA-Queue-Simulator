@@ -2,8 +2,10 @@
 #include "GenerateLaneCVehicles.hpp"
 
 LaneC::LaneC():
-x(1500),
-y(525),
+x1(1500),
+y1(525),
+x2(1500),
+y2(425),
 speed(5),
 size(50)
 {
@@ -12,25 +14,36 @@ size(50)
 void LaneC::update()
 {
     const int screenHeight=GetScreenHeight();
-    if(isActive)
+    if(isActive1)
     {
-        if (x == 925) 
+        if (x1 == 925) 
         {
-            y += speed;
-            x = 925;
+            y1 += speed;
+            x1 = 925;
             
-            if ((y + size>= screenHeight) || (y + size<= 0)) 
+            if ((y1 + size>= screenHeight) || (y1 + size<= 0)) 
             {
-                isActive=false;  
+                isActive1=false;  
             }
         }
         else
-        x-=speed;
+        x1-=speed;
+    }
+
+    if(isActive2)
+    {
+        x2-= speed;
+        if ((x2<= 0)) 
+            {
+                isActive2=false;  
+            }
     }
 }
 
 void LaneC::draw()
 {
-    if(isActive)
-    DrawRectangle(x,y,size,size,RED);
+    if(isActive1)
+    DrawRectangle(x1,y1,size,size,RED);
+    if(isActive2)
+    DrawRectangle(x2,y2,size,size,RED);
 }

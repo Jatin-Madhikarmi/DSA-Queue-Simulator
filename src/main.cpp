@@ -2,6 +2,8 @@
 #include"GenerateVehicles.hpp"
 #include"GenerateLanes.hpp"
 #include"GenerateLaneCVehicles.hpp"
+#include"GeneratingLaneAVehicles.hpp"
+#include"GeneratingLanesBVehicles.hpp"
 
 int main()
 {
@@ -12,9 +14,11 @@ int main()
     Vehicles vehicles;
     Lanes lanes;
     LaneC vehicleC;
+    LaneA vehicleA;
+    LaneB vehicleB;
 
     InitWindow(screenWidth,screenHeight,"MAIN SCREEN");
-    SetTargetFPS(60);
+    SetTargetFPS(30);
     while(WindowShouldClose()==false)
     {
         lanes.Draw();
@@ -22,6 +26,10 @@ int main()
         vehicles.Update();
         vehicleC.update();
         vehicleC.draw();
+        vehicleA.update();
+        vehicleA.draw();
+        vehicleB.update();
+        vehicleB.draw();
         BeginDrawing();
         ClearBackground(BLACK);
         EndDrawing();
