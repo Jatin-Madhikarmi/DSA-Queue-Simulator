@@ -1,7 +1,4 @@
 #include<raylib.h>
-#include<fstream>
-#include<thread>
-#include<chrono>
 #include"GenerateVehicles.hpp"
 #include"GenerateLanes.hpp"
 #include"GenerateLaneCVehicles.hpp"
@@ -20,7 +17,7 @@ int main()
     LaneC vehicleC;
     LaneA vehicleA;
     LaneB vehicleB;
-    vehicle random;
+    vehicle random(650, 0, 50, 3);
 
     InitWindow(screenWidth,screenHeight,"MAIN SCREEN");
     SetTargetFPS(30);
@@ -35,10 +32,10 @@ int main()
         // vehicleA.draw();
         // vehicleB.update();
         // vehicleB.draw();
-        random.draw();
         random.update();
         BeginDrawing();
         ClearBackground(BLACK);
+        random.draw();
         EndDrawing();
     }
     CloseWindow();

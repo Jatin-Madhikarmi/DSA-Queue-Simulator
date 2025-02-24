@@ -1,96 +1,110 @@
-#include<raylib.h>
 #include "Dummy.hpp"
-#include<istream>
-#include<fstream>
+#include <fstream>
 
-vehicle::vehicle():
-x(675),
-y(0),
-size(50),
-speed(1)
-{
+// Constructor
+vehicle::vehicle(int x, int y, int size, int speed)
+    : x(x), y(y), size(size), speed(speed) {
+    readStateFromFile(); // Read the number of vehicles from file
+    arr.resize(5,y);
+    int coordinates=0;
+    for(int i=0;i<state;i++)
+    {
+        arr[i]=y+coordinates;
+        coordinates+=100;
+    }
+    // Initialize Y positions
+    isActive.resize(state, true); // Initialize activity status
 }
 
-void vehicle::update() {
-    const int screenHeight = GetScreenHeight();
-    static float lastUpdateTime = GetTime();  // Static variable to store the last update time
-    int state = 0;
-
-    // Read the number of vehicles
+// Read the number of vehicles from file
+void vehicle::readStateFromFile() {
     std::ifstream file("VehiclesNo.txt");
     if (file.is_open()) {
         file >> state;
+        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
         file.close();
     } else {
-        TraceLog(LOG_WARNING, "Could not open traffic light file for reading!");
-        return;
+        TraceLog(LOG_WARNING, "Unable to read the file.");
+        state = 0; // Default to 0 if file cannot be read
     }
-    vehicleActiveStates.resize(state, true);
 
-    // Read the current traffic state
-    std::ifstream trafficFile("D&CTrafficLight.txt");
-    if (trafficFile.is_open()) {
-        trafficFile >> trafficState;
-        trafficFile.close();
+    std::ifstream File("D&CTrafficLight.txt");
+    if (File.is_open()) {
+        File >> light;
+        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
+        File.close();
     } else {
-        TraceLog(LOG_WARNING, "Couldn't able to open D&CTrafficLight.txt");
-        return;
+        TraceLog(LOG_WARNING, "Unable to read the file.");
+        light = 0; // Default to 0 if file cannot be read
     }
+}
 
-    // Check if 10 seconds have passed since the last update
-    float currentTime = GetTime();
-    if (currentTime - lastUpdateTime >= 10) {
-        // Toggle the traffic state
-        trafficState = (trafficState == 0) ? 1 : 0;
+// Update vehicle positions
+void vehicle::update() {
+    const int screenHeight = GetScreenHeight();
+    static float LastUpdatedTime=GetTime();
+    const int Y=75;
 
-        // Update the traffic state in the file
+    float currentTime=GetTime();
+    if(currentTime-LastUpdatedTime>=10)
+    {
+        light=(light==0) ? 1 : 0;
+
         std::ofstream trafficFile("D&CTrafficLight.txt");
-        if (trafficFile.is_open()) {
-            trafficFile << trafficState;
+        if (trafficFile.is_open()) 
+        {
+            trafficFile << light;
             trafficFile.close();
-        } else {
+        } 
+        else 
+        {
             printf("Failed to open D&CTrafficLight.txt for writing.\n");
         }
-
-        // Update the last update time
-        lastUpdateTime = currentTime;
+        LastUpdatedTime = currentTime;
     }
-
-    // If traffic state is 1, move the vehicles
-    if (trafficState == 1) {
-        for (int i = 0; i < state; i++) {
-            if (vehicleActiveStates[i] == true) {
-                vehicleYPositions[i] += speed;
-                if (vehicleYPositions[i] + size >= screenHeight) {
-                    printf("Collision detected for the vehicle %d\n", i);
-                    vehicleActiveStates[i] = false;
+    for (int i = 0; i < state; i++) 
+    {        
+        if (isActive[i] == true) 
+        {
+            // Check if the vehicle has crossed the traffic light
+            bool hasCrossedTrafficLight = (arr[i] >= Y);
+            
+            // If the vehicle has crossed the traffic light, it moves freely
+            if (hasCrossedTrafficLight) 
+            {
+                arr[i] += speed;
+            }
+            // If the vehicle hasn't crossed the traffic light, it stops during red light
+            else 
+            {
+                if (light == 1) 
+                {  // Green light: move vehicles
+                     arr[i] += speed;
                 }
+            }
+            // Check if the vehicle has collided with the bottom of the screen
+            if (arr[i] + size >= screenHeight) {
+                printf("Collision detected for the vehicle %d\n", i);
+                isActive[i] = false;
             }
         }
     }
 }
-//here the update function collision's only detected when the the last vehicle goes out of the scope then the whole collison is detected 
-//and the vehicle are no longer rendered onto the screen
-    
-    void vehicle::draw() {
-    int state = 0;
-        std::ifstream file("VehiclesNo.txt");
-        if (file.is_open()) 
+
+// Draw vehicles
+void vehicle::draw() 
+{
+    if(light==1)
+    {
+        DrawRectangle(575,75,450,100,GREEN);
+    }
+    else
+    DrawRectangle(575,75,450,100,RED);
+    for (int i = 0; i < state; i++) 
+    {
+        if (isActive[i]) 
         {
-            file >> state;
-            file.close();
-        } else 
-        {
-            TraceLog(LOG_WARNING, "Could not open traffic light file for reading!");
-            return;
+            DrawRectangle(x, arr[i], size, size, BLUE); // Draw the vehicle
         }
-        int coordinates=0;
-        vehicleActiveStates.resize(state,true);
-        vehicleYPositions.resize(state,y);
-        for(int i=0;i<state;i++)
-        {
-            if(vehicleActiveStates[i])
-            DrawRectangle(x,vehicleYPositions[i]+coordinates,size,size,RED);
-            coordinates+=100;
-        }
+    }
 }
