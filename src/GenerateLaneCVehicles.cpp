@@ -1,11 +1,9 @@
 #include<raylib.h>
-#include "GenerateLaneCVehicles.hpp"
+#include"GenerateLaneCVehicles.hpp"
 #include<fstream>
 #include<istream>
-#include<chrono>
-#include<thread>
 
-LaneC::LaneC():
+LaneC::LaneC(int x1,int y1,int x2,int y2,int size,int speed):
 x1(1500),
 y1(525),
 x2(1500),
@@ -13,138 +11,136 @@ y2(425),
 speed(5),
 size(50)
 {
+    readStateFromFile(); // Read the number of vehicles from file
+    // Initialize Y positions
+    arr1.resize(state,x1);
+    brr1.resize(state,y1);
+    arr2.resize(state,x2);
+    brr2.resize(state,y2);
+    int coordinates1=0;
+    int coordinates2=0;
+    for(int i=0;i<state;i++)
+    {
+        arr1[i]=x1-coordinates1;
+        coordinates1+=100;
+        arr2[i]=x2-coordinates2;
+        coordinates2+=100;
+    }
+    isActive1.resize(state, true); // Initialize activity status 
+    isActive2.resize(state, true); // Initialize activity status
+}
+
+void LaneC::readStateFromFile() {
+    std::ifstream file("VehiclesNo.txt");
+    if (file.is_open()) {
+        file >> state;
+        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
+        file.close();
+    } else {
+        TraceLog(LOG_WARNING, "Unable to read the file.");
+        state = 0; // Default to 0 if file cannot be read
+    }
+
+    std::ifstream File("D&CTrafficLight.txt");
+    if (File.is_open()) {
+        File >> light;
+        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
+        File.close();
+    } else {
+        TraceLog(LOG_WARNING, "Unable to read the file.");
+        light = 0; // Default to 0 if file cannot be read
+    }
 }
 
 void LaneC::update()
 {
-    //const int screenWidth = GetScreenWidth();
-    // const int screenHeight = GetScreenHeight();
+    const int screenHeight = GetScreenHeight();
+    const int screenWidth = GetScreenWidth();
+    static float LastUpdatedTime=GetTime();
+    const int X=1025;
 
-    // std::ifstream File("D&CTrafficLight.txt");
-    // File>>state;
-    // File>>state;
-    // File.close();
+    float currentTime=GetTime();
+    if(currentTime-LastUpdatedTime>=10)
+    {
+        light=(light==0) ? 1 : 0;
 
-
-    // // Debugging output
-    // if(state==1)
-    // {
-    // if(isActive1)
-    // {
-    //     if (x1 == 925) 
-    //     {
-    //         y1 += speed;
-    //         x1 = 925;
-            
-    //         if ((y1 + size>= screenHeight) || (y1 + size<= 0)) 
-    //         {
-    //             isActive1=false;  
-    //         }
-    //     }
-    //     else
-    //     x1-=speed;
-    // }
-
-    // if(isActive2)
-    // {
-    //     x2-= speed;
-    //     if ((x2<= 0)) 
-    //         {
-    //             isActive2=false;  
-    //         }
-    // }
-
-    // }
-    // else {  // Traffic light is RED
-    //     TraceLog(LOG_INFO, "Traffic Light is RED. Vehicles are stopped.");
-
-    //     // Start the timer if it hasn't started yet
-    //     if (!timerStarted) {
-    //         startTime = GetTime();
-    //         timerStarted = true;
-    //     }
-
-    //     // If 5 seconds have passed, change the traffic light state
-    //     if (GetTime() - startTime >= 5.0f) {
-    //         state = 1;  // Change to GREEN
-
-    //         // Write the new state to the file
-    //         std::ofstream fileOut("D&CTrafficLight.txt");
-    //         if (fileOut.is_open()) {
-    //             fileOut << state;
-    //             fileOut.close();
-    //             TraceLog(LOG_INFO, "Traffic Light changed to GREEN after 5 seconds.");
-    //         } else {
-    //             TraceLog(LOG_WARNING, "Could not open traffic light file for writing!");
-    //         }
-
-    //         timerStarted = false;  // Reset timer for next cycle
-    //     }
-    int screenHeight = GetScreenHeight();
-
-    // Read traffic light state from file
-    std::ifstream fileIn("D&CTrafficLight.txt");
-    if (fileIn.is_open()) {
-        fileIn >> state;
-        fileIn.close();
-    } else {
-        TraceLog(LOG_WARNING, "Could not open traffic light file for reading!");
-        return;
-    }
-
-    // **Stop toggling when x1 or x2 reaches 175 or 625**
-    if ((x1 == 175 || x1 == 625) || (x2 == 175 || x2 == 625)) {
-        toggleAllowed = false;
-    }
-
-    // Toggle traffic light state every 5 seconds (only if toggling is allowed)
-    if (toggleAllowed && (GetTime() - lastToggleTime >= 5.0f)) {
-        state = (state == 0) ? 1 : 0;  // Toggle 0 <--> 1
-
-        // Write updated state to file
-        std::ofstream fileOut("D&CTrafficLight.txt");
-        if (fileOut.is_open()) {
-            fileOut << state;
-            fileOut.close();
-            TraceLog(LOG_INFO, "Traffic Light state changed to: %d", state);
-        } else {
-            TraceLog(LOG_WARNING, "Could not open traffic light file for writing!");
+        std::ofstream trafficFile("D&CTrafficLight.txt");
+        if (trafficFile.is_open()) 
+        {
+            trafficFile << light;
+            trafficFile.close();
+        } 
+        else 
+        {
+            printf("Failed to open D&CTrafficLight.txt for writing.\n");
         }
-
-        lastToggleTime = GetTime();  // Reset the timer
+        LastUpdatedTime = currentTime;
     }
-
-    // **Vehicle Movement Logic (Only if traffic light is GREEN)**
-    if (state == 1) {
-        if (isActive1) {
-            if (x1 == 925) {
-                y1 += speed;
-                x1 = 925;
-                
-                if ((y1 + size >= screenHeight) || (y1 + size <= 0)) {
-                    isActive1 = false;
+    for (int i = 0; i < state; i++) 
+    {        
+        if (isActive1[i] == true) 
+        {
+            if(arr1[i]==925)
+            {
+                arr1[i]=925;
+                brr1[i]+=speed;
+                if(brr1[i] + size >= screenHeight)
+                {
+                    isActive1[i]=false;
                 }
-            } else {
-                x1 -= speed;
+            }
+            else
+            {
+                arr1[i]-=speed;
             }
         }
 
-        if (isActive2) {
-            x2 -= speed;
-            if (x2 <= 0) {
-                isActive2 = false;
+        if(isActive2[i] == true)
+        {
+            // Check if the vehicle has crossed the traffic light
+            bool hasCrossedTrafficLight = (arr2[i] <= X);
+            
+            // If the vehicle has crossed the traffic light, it moves freely
+            if (hasCrossedTrafficLight) 
+            {
+                arr2[i] -= speed;
+            }
+            // If the vehicle hasn't crossed the traffic light, it stops during red light
+            else 
+            {
+                if (light == 1) 
+                {  // Green light: move vehicles
+                    arr2[i] -= speed;
+                }
+            }
+            // Check if the vehicle has collided with the bottom of the screen
+            if (arr2[i]<= 0 ) {
+                printf("Collision detected for the vehicle %d\n", i);
+                isActive2[i] = false;
             }
         }
-    } else {
-        TraceLog(LOG_INFO, "Traffic Light is RED. Vehicles are stopped.");
+        
     }
 }
 
 
 void LaneC::draw()
 {
-    if(isActive1)
-    DrawRectangle(x1,y1,size,size,RED);
-    if(isActive2)
-    DrawRectangle(x2,y2,size,size,RED);
+    if(light==1)
+    {
+        DrawRectangle(1025,175,100,450,GREEN);
+    }
+    else
+    DrawRectangle(1025,175,100,450,RED);
+    for (int i = 0; i < state; i++) 
+    {
+        if (isActive1[i]) 
+        {
+            DrawRectangle(arr1[i], brr1[i], size, size, BLACK); // Draw the vehicle
+        }
+        if (isActive2[i]) 
+        {
+            DrawRectangle(arr2[i], brr2[i], size, size, BLACK); // Draw the vehicle
+        }
+    }
 }

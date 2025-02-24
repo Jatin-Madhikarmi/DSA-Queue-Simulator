@@ -14,7 +14,7 @@ int main()
 
     Vehicles vehicles;
     Lanes lanes;
-    LaneC vehicleC;
+    LaneC vehicleC(1500,525,1500,425,50,3);
     LaneA vehicleA;
     LaneB vehicleB;
     vehicle random(650, 0, 50, 3);
@@ -26,16 +26,16 @@ int main()
         lanes.Draw();
         // vehicles.Draw();
         // vehicles.Update();
-        // vehicleC.update();
-        // vehicleC.draw();
+        vehicleC.update();
         // vehicleA.update();
         // vehicleA.draw();
         // vehicleB.update();
         // vehicleB.draw();
-        random.update();
+        //random.update();
         BeginDrawing();
         ClearBackground(BLACK);
-        random.draw();
+        vehicleC.draw();
+        //random.draw();
         EndDrawing();
     }
     CloseWindow();

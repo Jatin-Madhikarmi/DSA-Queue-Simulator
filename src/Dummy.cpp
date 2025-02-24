@@ -5,14 +5,14 @@
 vehicle::vehicle(int x, int y, int size, int speed)
     : x(x), y(y), size(size), speed(speed) {
     readStateFromFile(); // Read the number of vehicles from file
-    arr.resize(5,y);
+    // Initialize Y positions
+    arr.resize(state,y);
     int coordinates=0;
     for(int i=0;i<state;i++)
     {
         arr[i]=y+coordinates;
         coordinates+=100;
     }
-    // Initialize Y positions
     isActive.resize(state, true); // Initialize activity status
 }
 
