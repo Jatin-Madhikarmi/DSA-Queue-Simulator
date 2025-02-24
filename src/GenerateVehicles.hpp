@@ -1,5 +1,7 @@
 #pragma once
-
+#include<istream>
+#include<ostream>
+#include<vector>
 class Vehicles
 {
     public:
@@ -21,5 +23,7 @@ class Vehicles
     int DL2Oy;//Represents the y-cordiante of the lane DL2 and O represetsn the outgoing vehicles.
     int DL2OSpeed;
     bool DL2OActive=true;
+
+    std::vector <bool> trafficState;
 
 };

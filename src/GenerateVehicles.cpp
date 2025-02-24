@@ -1,5 +1,7 @@
 #include<raylib.h>
 #include "GenerateVehicles.hpp"
+#include<istream>
+#include<fstream>
 
 Vehicles::Vehicles():speed(5),
 size(50),
@@ -14,6 +16,15 @@ DL2Oy(350)
 
 void Vehicles::Update()
 {
+    int state=1;
+    std::ifstream file("D&CTrafficLight.txt");
+        if (file.is_open()) {
+            file >> state;
+            file.close();
+        } else {
+            TraceLog(LOG_WARNING, "Could not open traffic light file for reading!");
+            return;
+        }
 
     const int screenWidth=GetScreenWidth();
     const int screenHeight=GetScreenHeight();

@@ -1,4 +1,6 @@
 #pragma once
+#include<chrono>
+#include<thread>
 
 class LaneC
 {
@@ -16,5 +18,9 @@ class LaneC
     int size=50;
     bool isActive1=true;
     bool isActive2=true;
-
+    int state=1;
+    int startTime =0;
+    int timerStarted=0;
+    float lastToggleTime = 0.0f;
+    bool toggleAllowed=true;
 };
