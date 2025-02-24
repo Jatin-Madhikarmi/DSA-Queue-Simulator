@@ -126,12 +126,6 @@ void LaneD::update()
 
 void LaneD::draw()
 {
-    if(light==1)
-    {
-        DrawRectangle(475,175,100,450,GREEN);
-    }
-    else
-    DrawRectangle(475,175,100,450,RED);
     for (int i = 0; i < state; i++) 
     {
         if (isActive1[i]) 

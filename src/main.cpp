@@ -23,7 +23,7 @@ int main()
     SetTargetFPS(30);
     while(WindowShouldClose()==false)
     {
-        lanes.Draw();
+        lanes.Update();
         vehicleD.update();
         vehicleC.update();
         // vehicleA.update();
@@ -32,6 +32,7 @@ int main()
         // vehicleB.draw();
         //random.update();
         BeginDrawing();
+        lanes.Draw();
         ClearBackground(BLACK);
         vehicleD.draw();
         vehicleC.draw();
