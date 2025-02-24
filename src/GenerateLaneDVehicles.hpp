@@ -1,19 +1,18 @@
-#ifndef GENERATE_LANE_C_VEHICLES_HPP
-#define GENERATE_LANE_C_VEHICLES_HPP
+#ifndef GENERATE_LANE_D_VEHICLES_HPP
+#define GENERATE_LANE_D_VEHICLES_HPP
 
 #include<vector>
 #include<raylib.h>
-class LaneC
+class LaneD
 {
     public:
-    LaneC(int x1,int y1,int x2,int y2,int speed,int size);
+    LaneD(int x1,int y1,int x2,int y2,int size,int speed);
     void draw();
     void update();
 
     private:
     int x1,y1;
-    int x2;
-    int y2;
+    int x2,y2;
     int speed=5;
     int size=50;
 

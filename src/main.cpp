@@ -1,5 +1,5 @@
 #include<raylib.h>
-#include"GenerateVehicles.hpp"
+#include"GenerateLaneDVehicles.hpp"
 #include"GenerateLanes.hpp"
 #include"GenerateLaneCVehicles.hpp"
 #include"GeneratingLaneAVehicles.hpp"
@@ -12,9 +12,9 @@ int main()
     const int screenHeight=800.0f;
 
 
-    Vehicles vehicles;
+    LaneD vehicleD(100,200,100,300,3,50);
     Lanes lanes;
-    LaneC vehicleC(1500,525,1500,425,50,3);
+    LaneC vehicleC(1500,525,1500,425,3,50);
     LaneA vehicleA;
     LaneB vehicleB;
     vehicle random(650, 0, 50, 3);
@@ -24,8 +24,7 @@ int main()
     while(WindowShouldClose()==false)
     {
         lanes.Draw();
-        // vehicles.Draw();
-        // vehicles.Update();
+        vehicleD.update();
         vehicleC.update();
         // vehicleA.update();
         // vehicleA.draw();
@@ -34,6 +33,7 @@ int main()
         //random.update();
         BeginDrawing();
         ClearBackground(BLACK);
+        vehicleD.draw();
         vehicleC.draw();
         //random.draw();
         EndDrawing();

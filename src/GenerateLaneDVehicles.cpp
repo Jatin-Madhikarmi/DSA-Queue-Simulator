@@ -1,13 +1,13 @@
 #include<raylib.h>
-#include"GenerateLaneCVehicles.hpp"
+#include"GenerateLaneDVehicles.hpp"
 #include<fstream>
 #include<istream>
 
-LaneC::LaneC(int x1,int y1,int x2,int y2,int size,int speed):
-x1(1500),
-y1(525),
-x2(1500),
-y2(425),
+LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size):
+x1(100),
+y1(200),
+x2(100),
+y2(300),
 speed(5),
 size(50)
 {
@@ -23,14 +23,15 @@ size(50)
     {
         arr1[i]=x1-coordinates1;
         coordinates1+=100;
-        arr2[i]=x2-coordinates2;
+        arr2[i]=x2+coordinates2;
         coordinates2+=100;
     }
     isActive1.resize(state, true); // Initialize activity status 
     isActive2.resize(state, true); // Initialize activity status
 }
 
-void LaneC::readStateFromFile() {
+void LaneD::readStateFromFile() 
+{
     std::ifstream file("VehiclesNo.txt");
     if (file.is_open()) {
         file >> state;
@@ -52,11 +53,11 @@ void LaneC::readStateFromFile() {
     }
 }
 
-void LaneC::update()
+void LaneD::update()
 {
-    const int screenHeight = GetScreenHeight();
+    const int screenWidth = GetScreenWidth();
     static float LastUpdatedTime=GetTime();
-    const int X=1025;
+    const int X=475;
 
     float currentTime=GetTime();
     if(currentTime-LastUpdatedTime>=10)
@@ -79,41 +80,41 @@ void LaneC::update()
     {        
         if (isActive1[i] == true) 
         {
-            if(arr1[i]==925)
+            if(arr1[i]==625)
             {
-                arr1[i]=925;
-                brr1[i]+=speed;
-                if(brr1[i] + size >= screenHeight)
+                arr1[i]=625;
+                brr1[i]-=speed;
+                if(brr1[i]<= 0)
                 {
                     isActive1[i]=false;
                 }
             }
             else
             {
-                arr1[i]-=speed;
+                arr1[i]+=speed;
             }
         }
 
         if(isActive2[i] == true)
         {
             // Check if the vehicle has crossed the traffic light
-            bool hasCrossedTrafficLight = (arr2[i] <= X);
+            bool hasCrossedTrafficLight = (arr2[i] >= X);
             
             // If the vehicle has crossed the traffic light, it moves freely
             if (hasCrossedTrafficLight) 
             {
-                arr2[i] -= speed;
+                arr2[i] += speed;
             }
             // If the vehicle hasn't crossed the traffic light, it stops during red light
             else 
             {
                 if (light == 1) 
                 {  // Green light: move vehicles
-                    arr2[i] -= speed;
+                    arr2[i] += speed;
                 }
             }
             // Check if the vehicle has collided with the bottom of the screen
-            if (arr2[i]<= 0 ) {
+            if (arr2[i] + size >= screenWidth) {
                 printf("Collision detected for the vehicle %d\n", i);
                 isActive2[i] = false;
             }
@@ -123,14 +124,14 @@ void LaneC::update()
 }
 
 
-void LaneC::draw()
+void LaneD::draw()
 {
     if(light==1)
     {
-        DrawRectangle(1025,175,100,450,GREEN);
+        DrawRectangle(475,175,100,450,GREEN);
     }
     else
-    DrawRectangle(1025,175,100,450,RED);
+    DrawRectangle(475,175,100,450,RED);
     for (int i = 0; i < state; i++) 
     {
         if (isActive1[i]) 
