@@ -3,6 +3,7 @@
 class Lanes
 {
     public:
+    void Update();
     void Draw();
     Lanes();
     private:
@@ -10,4 +11,6 @@ class Lanes
     int y1;
     int x2;
     int y2;
+    bool trafficLightDC;
+    bool trafficLightAB;
 };
