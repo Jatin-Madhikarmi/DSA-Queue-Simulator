@@ -15,9 +15,9 @@ int main()
     LaneD vehicleD(100,200,100,300,3,50);
     Lanes lanes;
     LaneC vehicleC(1500,525,1500,425,3,50);
-    LaneA vehicleA;
+    LaneA vehicleA(925, 0,825,0, 3, 50);
     LaneB vehicleB(625,700,750,700,3,50);
-    vehicle random(650, 0, 50, 3);
+    //vehicle random(925, 0,825,0, 3, 50);
 
     InitWindow(screenWidth,screenHeight,"MAIN SCREEN");
     SetTargetFPS(30);
@@ -26,13 +26,13 @@ int main()
         lanes.Update();
         vehicleD.update();
         vehicleC.update();
-        // vehicleA.update();
-        // vehicleA.draw();
+        vehicleA.update();
         vehicleB.update();
         //random.update();
         BeginDrawing();
-        lanes.Draw();
         ClearBackground(BLACK);
+        lanes.Draw();
+        vehicleA.draw();
         vehicleD.draw();
         vehicleC.draw();
         vehicleB.draw();
