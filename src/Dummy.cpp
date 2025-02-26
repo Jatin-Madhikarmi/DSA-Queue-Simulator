@@ -1,14 +1,16 @@
-#include "Dummy.hpp"
-#include <fstream>
+#include<raylib.h>
+#include"Dummy.hpp"
+#include<fstream>
+#include<istream>
 
-// Constructor
-vehicle::vehicle(int x1, int y1,int x2,int y2,int speed, int size):
-x1(x1), 
-y1(y1),
-x2(x2),
-y2(y2),
-size(size), 
-speed(speed) {
+Vehicles::Vehicles(int x1,int y1,int x2,int y2,int size,int speed):
+x1(925),
+y1(0),
+x2(825),
+y2(0),
+speed(5),
+size(50)
+{
     readStateFromFile(); // Read the number of vehicles from file
     // Initialize Y positions
     arr1.resize(state,x1);
@@ -16,18 +18,19 @@ speed(speed) {
     arr2.resize(state,x2);
     brr2.resize(state,y2);
     int coordinates1=0;
-    //int coordinates2=0;
+    int coordinates2=0;
     for(int i=0;i<state;i++)
     {
         brr1[i]=y1-coordinates1;
         coordinates1+=100;
+        brr2[i]=y2-coordinates2;
+        coordinates2+=100;
     }
-    isActive1.resize(state, true); // Initialize activity status
+    isActive1.resize(state, true); // Initialize activity status 
     isActive2.resize(state, true); // Initialize activity status
 }
 
-// Read the number of vehicles from file
-void vehicle::readStateFromFile() {
+void Vehicles::readStateFromFile() {
     std::ifstream file("VehiclesNo.txt");
     if (file.is_open()) {
         file >> state;
@@ -49,19 +52,19 @@ void vehicle::readStateFromFile() {
     }
 }
 
-// Update vehicle positions
-void vehicle::update() {
-    //const int screenHeight = GetScreenHeight();
-    const int screenWidth = GetScreenWidth();
+void Vehicles::update()
+{
+    const int screenWidth=GetScreenWidth();
+    const int screenHeight=GetScreenHeight();
     static float LastUpdatedTime=GetTime();
-    //const int Y=75;
+    const int Y=275;
 
     float currentTime=GetTime();
     if(currentTime-LastUpdatedTime>=10)
     {
         light=(light==0) ? 1 : 0;
 
-        std::ofstream trafficFile("D&CTrafficLight.txt");
+        std::ofstream trafficFile("A&BTrafficLight.txt");
         if (trafficFile.is_open()) 
         {
             trafficFile << light;
@@ -75,54 +78,75 @@ void vehicle::update() {
     }
     for (int i = 0; i < state; i++) 
     {        
-        // if (isActive[i] == true) 
-        // {
-        //     // Check if the vehicle has crossed the traffic light
-        //     bool hasCrossedTrafficLight = (arr[i] >= Y);
-            
-        //     // If the vehicle has crossed the traffic light, it moves freely
-        //     if (hasCrossedTrafficLight) 
-        //     {
-        //         arr[i] += speed;
-        //     }
-        //     // If the vehicle hasn't crossed the traffic light, it stops during red light
-        //     else 
-        //     {
-        //         if (light == 1) 
-        //         {  // Green light: move vehicles
-        //              arr[i] += speed;
-        //         }
-        //     }
-        //     // Check if the vehicle has collided with the bottom of the screen
-        //     if (arr[i] + size >= screenHeight) {
-        //         printf("Collision detected for the vehicle %d\n", i);
-        //         isActive[i] = false;
-        //     }
-        // }
-        if(isActive1[i]==true)
+        if (isActive1[i] == true) 
         {
-            if(brr1[i]==275)
+            if(brr1[i]==225)
             {
-                brr1[i]=275;
+                brr1[i]=225;
                 arr1[i]+=speed;
                 if(arr1[i] + size >= screenWidth)
-                isActive1[i]=false;
+                {
+                    isActive1[i]=false;
+                }
             }
-            else 
-            brr1[i]+=speed;
-
+            else
+            {
+                brr1[i]+=speed;
+            }
         }
+
+        if (isActive2[i] == true) {
+            // Check if the vehicle is in the special case (divisible by 2 and y-coordinate is 325)
+            if (i % 2 == 0 && brr2[i] == 325) {
+                // Move the vehicle along the x-axis
+                arr2[i] += speed;
+        
+                // Ensure the y-coordinate remains constant
+                brr2[i] = 325;
+        
+                // Check if the vehicle has moved off the screen along the x-axis
+                if (arr2[i] + size >= screenWidth) {
+                    isActive2[i] = false;
+                }
+            }
+            else {
+                // Handle normal movement and traffic light logic
+                bool hasCrossedTrafficLight = (brr2[i] >= Y);
+        
+                // If the vehicle has crossed the traffic light, it moves freely
+                if (hasCrossedTrafficLight) {
+                    brr2[i] += speed;
+                }
+                // If the vehicle hasn't crossed the traffic light, it stops during red light
+                else {
+                    if (light == 1) {  // Green light: move vehicles
+                        brr2[i] += speed;
+                    }
+                }
+        
+                // Check if the vehicle has collided with the bottom of the screen
+                if (brr2[i] + size >= screenHeight) {
+                    printf("Collision detected for the vehicle %d\n", i);
+                    isActive2[i] = false;
+                }
+            }
+        }
+        
     }
 }
 
-// Draw vehicles
-void vehicle::draw() 
+
+void Vehicles::draw()
 {
     for (int i = 0; i < state; i++) 
     {
         if (isActive1[i]) 
         {
             DrawRectangle(arr1[i], brr1[i], size, size, BLACK); // Draw the vehicle
+        }
+        if (isActive2[i]) 
+        {
+            DrawRectangle(arr2[i], brr2[i], size, size, BLACK); // Draw the vehicle
         }
     }
 }

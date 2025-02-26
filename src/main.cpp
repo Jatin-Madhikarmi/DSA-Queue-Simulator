@@ -4,6 +4,7 @@
 #include"GenerateLaneCVehicles.hpp"
 #include"GeneratingLaneAVehicles.hpp"
 #include"GeneratingLanesBVehicles.hpp"
+#include"Dummy.hpp"
 
 int main()
 {
@@ -17,6 +18,8 @@ int main()
     LaneA vehicleA(925, 0,825,0, 3, 50);
     LaneB vehicleB(625,700,750,700,3,50);
 
+    Vehicles random(925, 0,825,0, 3, 50);
+
     InitWindow(screenWidth,screenHeight,"MAIN SCREEN");
     SetTargetFPS(20);
     while(WindowShouldClose()==false)
@@ -26,14 +29,16 @@ int main()
         vehicleC.update();
         vehicleA.update();
         vehicleB.update();
+
+        random.update();
         BeginDrawing();
         ClearBackground(BLACK);
         lanes.Draw();
-        vehicleA.draw();
-        vehicleD.draw();
-        vehicleC.draw();
-        vehicleB.draw();
-        //random.draw();
+        //vehicleA.draw();
+        // vehicleD.draw();
+        // vehicleC.draw();
+        // vehicleB.draw();
+        random.draw();
         EndDrawing();
     }
     CloseWindow();
