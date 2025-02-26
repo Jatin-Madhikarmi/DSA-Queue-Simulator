@@ -6,7 +6,7 @@
 LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size):
 x1(100),
 y1(200),
-x2(100),
+x2(50),
 y2(300),
 speed(5),
 size(50)
@@ -23,7 +23,7 @@ size(50)
     {
         arr1[i]=x1-coordinates1;
         coordinates1+=100;
-        arr2[i]=x2+coordinates2;
+        arr2[i]=x2-coordinates2;
         coordinates2+=100;
     }
     isActive1.resize(state, true); // Initialize activity status 

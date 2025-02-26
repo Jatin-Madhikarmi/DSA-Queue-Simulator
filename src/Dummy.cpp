@@ -16,7 +16,7 @@ speed(speed) {
     arr2.resize(state,x2);
     brr2.resize(state,y2);
     int coordinates1=0;
-    int coordinates2=0;
+    //int coordinates2=0;
     for(int i=0;i<state;i++)
     {
         brr1[i]=y1-coordinates1;
@@ -51,10 +51,10 @@ void vehicle::readStateFromFile() {
 
 // Update vehicle positions
 void vehicle::update() {
-    const int screenHeight = GetScreenHeight();
+    //const int screenHeight = GetScreenHeight();
     const int screenWidth = GetScreenWidth();
     static float LastUpdatedTime=GetTime();
-    const int Y=75;
+    //const int Y=75;
 
     float currentTime=GetTime();
     if(currentTime-LastUpdatedTime>=10)

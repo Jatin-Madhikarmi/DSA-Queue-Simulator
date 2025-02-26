@@ -23,7 +23,7 @@ size(50)
     {
         brr1[i]=y1-coordinates1;
         coordinates1+=100;
-        brr2[i]=y2+coordinates2;
+        brr2[i]=y2-coordinates2;
         coordinates2+=100;
     }
     isActive1.resize(state, true); // Initialize activity status 
