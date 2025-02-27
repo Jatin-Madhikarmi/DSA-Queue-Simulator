@@ -3,13 +3,14 @@
 #include<fstream>
 #include<istream>
 
-LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size):
+LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size,int time):
 x1(100),
 y1(200),
 x2(50),
 y2(425),
 speed(5),
-size(50)
+size(50),
+traffictime(time)
 {
     readStateFromFile(); // Read the number of vehicles from file
     // Initialize Y positions
@@ -32,10 +33,19 @@ size(50)
 
 void LaneD::readStateFromFile() 
 {
+    std::ifstream F("Time.txt");
+    if (F.is_open()) {
+        F >> trafficTime;
+        TraceLog(LOG_INFO,"The value of Time retreived from the file for lane D is %d.\n",trafficTime);
+        F.close();
+    } else {
+        TraceLog(LOG_WARNING, "Unable to read the file.");
+    }
+
     std::ifstream file("VehiclesNoD.txt");
     if (file.is_open()) {
         file >> state;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
+        TraceLog(LOG_INFO, "Number of vehicles for lane D: %d", state);
         file.close();
     } else {
         TraceLog(LOG_WARNING, "Unable to read the file.");
@@ -45,21 +55,11 @@ void LaneD::readStateFromFile()
     std::ifstream File("D&CTrafficLight.txt");
     if (File.is_open()) {
         File >> light;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
+        TraceLog(LOG_INFO, "The traffic lisght state for the lane D: %d", light);
         File.close();
     } else {
         TraceLog(LOG_WARNING, "Unable to read the file.");
         light = 0; // Default to 0 if file cannot be read
-    }
-
-    std::ifstream F("Time.txt");
-    if (F.is_open()) {
-        F >> Time;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
-        TraceLog(LOG_INFO,"The value of Time retreived from the file is %d.\n",Time);
-        F.close();
-    } else {
-        TraceLog(LOG_WARNING, "Unable to read the file.");
     }
 }
 
@@ -71,8 +71,20 @@ void LaneD::update()
     const int X=475;
 
     float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=Time)
+    if(currentTime-LastUpdatedTime>=10)
     {
+        std::ofstream File("A&BTrafficLight.txt");
+        {
+            if(File.is_open())
+            {
+                File << light;
+                File.close();
+            }
+            else
+            TraceLog(LOG_WARNING,"Unable to open the file.\n");
+
+        }
+
         light=(light==0) ? 1 : 0;
 
         std::ofstream trafficFile("D&CTrafficLight.txt");
@@ -108,9 +120,9 @@ void LaneD::update()
 
         if(isActive2[i] == true)
         {
-            if(i%2==0 && arr2[i]==825)
+            if(i%2==0 && arr2[i]==725)
             {
-                arr2[i]=825;
+                arr2[i]=725;
                 brr2[i]+=speed;
                 if(brr2[i] + size >=screenHeight)
                 isActive2[i]=false;
@@ -151,11 +163,11 @@ void LaneD::draw()
     {
         if (isActive1[i]) 
         {
-            DrawRectangle(arr1[i], brr1[i], size, size, BLACK); // Draw the vehicle
+            DrawRectangle(arr1[i], brr1[i], size, size, VIOLET); // Draw the vehicle
         }
         if (isActive2[i]) 
         {
-            DrawRectangle(arr2[i], brr2[i], size, size, BLACK); // Draw the vehicle
+            DrawRectangle(arr2[i], brr2[i], size, size, VIOLET); // Draw the vehicle
         }
     }
 }

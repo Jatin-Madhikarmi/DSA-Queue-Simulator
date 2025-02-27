@@ -30,7 +30,6 @@ void Lanes::Update()
     {
         trafficLightAB=0;
         TraceLog(LOG_WARNING,"Unable to open the file.\n");
-
     }
 }
 
@@ -38,7 +37,8 @@ void Lanes::Draw()
 {
     const Color Grey={ 180, 180, 180, 255 };
     const int screenWidth=GetScreenWidth();
-    DrawRectangle(x1,y1,450,800,Grey);
+    const int screenHeight=GetScreenHeight();
+    DrawRectangle(x1,y1,450,screenHeight,Grey);
     DrawRectangle(x2,y2,screenWidth,450,Grey);
     if(trafficLightDC==1)
     {
