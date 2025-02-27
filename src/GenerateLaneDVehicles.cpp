@@ -32,7 +32,7 @@ size(50)
 
 void LaneD::readStateFromFile() 
 {
-    std::ifstream file("VehiclesNo.txt");
+    std::ifstream file("VehiclesNoD.txt");
     if (file.is_open()) {
         file >> state;
         TraceLog(LOG_INFO, "Number of vehicles: %d", state);

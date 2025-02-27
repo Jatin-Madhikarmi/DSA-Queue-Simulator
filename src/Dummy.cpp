@@ -31,7 +31,7 @@ size(50)
 }
 
 void Vehicles::readStateFromFile() {
-    std::ifstream file("VehiclesNo.txt");
+    std::ifstream file("VehiclesNoA.txt");
     if (file.is_open()) {
         file >> state;
         TraceLog(LOG_INFO, "Number of vehicles: %d", state);
@@ -97,19 +97,21 @@ void Vehicles::update()
 
         if (isActive2[i] == true) {
             // Check if the vehicle is in the special case (divisible by 2 and y-coordinate is 325)
-            if (i % 2 == 0 && brr2[i] == 325) {
+            if (i % 2 == 0 && brr2[i] == 425) 
+            {
                 // Move the vehicle along the x-axis
-                arr2[i] += speed;
+                arr2[i] -= speed;
         
                 // Ensure the y-coordinate remains constant
-                brr2[i] = 325;
+                brr2[i] = 425;
         
                 // Check if the vehicle has moved off the screen along the x-axis
-                if (arr2[i] + size >= screenWidth) {
+                if (arr2[i] <= 0) {
                     isActive2[i] = false;
                 }
             }
-            else {
+            else 
+            {
                 // Handle normal movement and traffic light logic
                 bool hasCrossedTrafficLight = (brr2[i] >= Y);
         
