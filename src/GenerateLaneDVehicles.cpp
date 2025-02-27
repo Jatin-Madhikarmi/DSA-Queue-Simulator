@@ -3,14 +3,13 @@
 #include<fstream>
 #include<istream>
 
-LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size,int time):
+LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size):
 x1(100),
 y1(200),
 x2(50),
 y2(425),
 speed(5),
-size(50),
-traffictime(time)
+size(50)
 {
     readStateFromFile(); // Read the number of vehicles from file
     // Initialize Y positions
@@ -67,38 +66,40 @@ void LaneD::update()
 {
     const int screenWidth = GetScreenWidth();
     const int screenHeight = GetScreenHeight();
-    static float LastUpdatedTime=GetTime();
     const int X=475;
 
-    float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=10)
+    // static float LastUpdatedTime=GetTime();
+
+    // float currentTime=GetTime();
+    // if(currentTime-LastUpdatedTime>=10)
+    // {
+
+    //     light=(light==0) ? 1 : 0;
+
+    //     std::ofstream trafficFile("D&CTrafficLight.txt");
+    //     if (trafficFile.is_open()) 
+    //     {
+    //         trafficFile << light;
+    //         trafficFile.close();
+    //     } 
+    //     else 
+    //     {
+    //         printf("Failed to open D&CTrafficLight.txt for writing.\n");
+    //     }
+    //     LastUpdatedTime = currentTime;
+    // }
+
+    std::ifstream File("D&CTrafficLight.txt");
+    if(File.is_open())
     {
-        std::ofstream File("A&BTrafficLight.txt");
-        {
-            if(File.is_open())
-            {
-                File << light;
-                File.close();
-            }
-            else
-            TraceLog(LOG_WARNING,"Unable to open the file.\n");
-
-        }
-
-        light=(light==0) ? 1 : 0;
-
-        std::ofstream trafficFile("D&CTrafficLight.txt");
-        if (trafficFile.is_open()) 
-        {
-            trafficFile << light;
-            trafficFile.close();
-        } 
-        else 
-        {
-            printf("Failed to open D&CTrafficLight.txt for writing.\n");
-        }
-        LastUpdatedTime = currentTime;
+        File >> light;
+        File.close();
     }
+    else
+    {
+        TraceLog(LOG_WARNING,"Unable to open the file A&BTrafficLight.\n");
+    }
+    
     for (int i = 0; i < state; i++) 
     {        
         if (isActive1[i] == true) 
@@ -171,3 +172,4 @@ void LaneD::draw()
         }
     }
 }
+

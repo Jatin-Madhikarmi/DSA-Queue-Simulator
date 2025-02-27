@@ -6,7 +6,7 @@
 class LaneA
 {
     public:
-    LaneA(int x1,int y1,int x2,int y2,int speed,int size,int time);
+    LaneA(int x1,int y1,int x2,int y2,int speed,int size);
     void draw();
     void update();
 
@@ -16,7 +16,6 @@ class LaneA
     int y2;
     int speed=5;
     int size=50;
-    int traffictime=10;
 
     std::vector<int> arr1; // X positions of vehicles in the left lane
     std::vector<int> brr1; // Y positions of vehicles in the left lane

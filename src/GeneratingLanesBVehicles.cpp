@@ -3,14 +3,13 @@
 #include<fstream>
 #include<istream>
 
-LaneB::LaneB(int x1,int y1,int x2,int y2,int size,int speed,int time):
+LaneB::LaneB(int x1,int y1,int x2,int y2,int size,int speed):
 x1(625),
 y1(700),
 x2(825),
 y2(700),
 speed(5),
-size(50),
-traffictime(time)
+size(50)
 {
     readStateFromFile(); // Read the number of vehicles from file
     // Initialize Y positions
@@ -44,7 +43,7 @@ void LaneB::readStateFromFile() {
     std::ifstream file("VehiclesNoB.txt");
     if (file.is_open()) {
         file >> state;
-        TraceLog(LOG_INFO, "Number of vehicles for lane B : %d", state);
+        TraceLog(LOG_INFO, "Number of vehicles for lane B : %d\n", state);
         file.close();
     } else {
         TraceLog(LOG_WARNING, "Unable to read the file.");
@@ -54,7 +53,7 @@ void LaneB::readStateFromFile() {
     std::ifstream File("A&BTrafficLight.txt");
     if (File.is_open()) {
         File >> light;
-        TraceLog(LOG_INFO, "Traffic Light state for lane B is : %d", light);
+        TraceLog(LOG_INFO, "Traffic Light state for lane B is : %d\n", light);
         File.close();
     } else {
         TraceLog(LOG_WARNING, "Unable to read the file.");
@@ -66,38 +65,19 @@ void LaneB::readStateFromFile() {
 void LaneB::update()
 {
     const int screenWidth=GetScreenWidth();
-    static float LastUpdatedTime=GetTime();
     const int Y=625;
 
-    float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=10)
+    std::ifstream File("A&BTrafficLight.txt");
+    if(File.is_open())
     {
-        std::ofstream File("D&CTrafficLight.txt");
-        {
-            if(File.is_open())
-            {
-                File << light;
-                File.close();
-            }
-            else
-            TraceLog(LOG_WARNING,"Unable to open the file.\n");
-
-        }
-
-        light=(light==0) ? 1 : 0;
-
-        std::ofstream trafficFile("A&BTrafficLight.txt");
-        if (trafficFile.is_open()) 
-        {
-            trafficFile << light;
-            trafficFile.close();
-        } 
-        else 
-        {
-            printf("Failed to open D&CTrafficLight.txt for writing.\n");
-        }
-        LastUpdatedTime = currentTime;
+        File >> light;
+        File.close();
     }
+    else
+    {
+        TraceLog(LOG_WARNING,"Unable to open the file A&BTrafficLight.\n");
+    }
+    
     for (int i = 0; i < state; i++) 
     {        
         if (isActive1[i] == true) 
@@ -170,3 +150,4 @@ void LaneB::draw()
         }
     }
 }
+

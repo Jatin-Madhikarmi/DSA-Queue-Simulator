@@ -6,7 +6,7 @@
 class LaneD
 {
     public:
-    LaneD(int x1,int y1,int x2,int y2,int size,int speed,int time);
+    LaneD(int x1,int y1,int x2,int y2,int size,int speed);
     void draw();
     void update();
 
@@ -15,7 +15,6 @@ class LaneD
     int x2,y2;
     int speed=5;
     int size=50;
-    int traffictime=10;
 
     std::vector<int> arr1; // X positions of vehicles in the left lane
     std::vector<int> brr1; // Y positions of vehicles in the left lane

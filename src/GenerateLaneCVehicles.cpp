@@ -3,14 +3,13 @@
 #include<fstream>
 #include<istream>
 
-LaneC::LaneC(int x1,int y1,int x2,int y2,int size,int speed,int time):
+LaneC::LaneC(int x1,int y1,int x2,int y2,int size,int speed):
 x1(1500),
 y1(525),
 x2(1500),
 y2(300),
 speed(5),
-size(50),
-traffictime(time)
+size(50)
 {
     readStateFromFile(); // Read the number of vehicles from file
     // Initialize Y positions
@@ -65,36 +64,18 @@ void LaneC::readStateFromFile() {
 void LaneC::update()
 {
     const int screenHeight = GetScreenHeight();
-    static float LastUpdatedTime=GetTime();
     const int X=1025;
 
-    float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=10)
+    
+    std::ifstream File("D&CTrafficLight.txt");
+    if(File.is_open())
     {
-        std::ofstream File("A&BTrafficLight.txt");
-        {
-            if(File.is_open())
-            {
-                File << light;
-                File.close();
-            }
-            else
-            TraceLog(LOG_WARNING,"Unable to open the file.\n");
-
-        }
-        light=(light==0) ? 1 : 0;
-
-        std::ofstream trafficFile("D&CTrafficLight.txt");
-        if (trafficFile.is_open()) 
-        {
-            trafficFile << light;
-            trafficFile.close();
-        } 
-        else 
-        {
-            printf("Failed to open D&CTrafficLight.txt for writing.\n");
-        }
-        LastUpdatedTime = currentTime;
+        File >> light;
+        File.close();
+    }
+    else
+    {
+        TraceLog(LOG_WARNING,"Unable to open the file A&BTrafficLight.\n");
     }
     for (int i = 0; i < state; i++) 
     {        
@@ -168,3 +149,4 @@ void LaneC::draw()
         }
     }
 }
+

@@ -7,31 +7,65 @@ Lanes::Lanes() : x1(575),y1(0),x2(0),y2(175)
 {
 }
 
-void Lanes::Update()
+void Lanes::Update(int traffictime)
 {
-    std::ifstream file("D&CTrafficLight.txt");
-    if(file.is_open())
+    static float LastUpdatedTime=GetTime();
+    
+    float currentTime=GetTime();
+    if(currentTime-LastUpdatedTime>=traffictime)
     {
-        file>>trafficLightDC;
-        file.close();
-    }
-    else
-    {
-        trafficLightDC=1;
-        TraceLog(LOG_WARNING,"Unable to open the file.\n");
-    }
-    std::ifstream File("A&BTrafficLight.txt");
-    if(File.is_open())
-    {
-        File>>trafficLightAB;
-        File.close();
-    }
-    else
-    {
-        trafficLightAB=0;
-        TraceLog(LOG_WARNING,"Unable to open the file.\n");
+        std::ofstream trafficfile("A&BTrafficLight.txt");
+        if (trafficfile.is_open()) 
+        {
+            trafficfile << light;
+            trafficfile.close();
+        } 
+        else 
+        {
+            printf("Failed to open A&BTrafficLight.txt for writing.\n");
+        }
+
+        std::ifstream File("A&BTrafficLight.txt");
+        if(File.is_open())
+        {
+            File>>trafficLightAB;
+            File.close();
+        }
+        else
+        {
+            trafficLightAB=0;
+            TraceLog(LOG_WARNING,"Unable to open the file.\n");
+        }
+
+        light=(light==0) ? 1 : 0;
+
+        std::ofstream trafficFile("D&CTrafficLight.txt");
+        if (trafficFile.is_open()) 
+        {
+            trafficFile << light;
+            trafficFile.close();
+        } 
+        else 
+        {
+            printf("Failed to open A&BTrafficLight.txt for writing.\n");
+        }
+
+        std::ifstream file("D&CTrafficLight.txt");
+        if(file.is_open())
+        {
+            file>>trafficLightDC;
+            file.close();
+        }
+        else
+        {
+            trafficLightDC=1;
+            TraceLog(LOG_WARNING,"Unable to open the file.\n");
+        }
+        LastUpdatedTime = currentTime;
+
     }
 }
+
 
 void Lanes::Draw()
 {
