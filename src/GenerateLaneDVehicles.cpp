@@ -7,7 +7,7 @@ LaneD::LaneD(int x1,int y1,int x2,int y2,int speed,int size):
 x1(100),
 y1(200),
 x2(50),
-y2(300),
+y2(425),
 speed(5),
 size(50)
 {
@@ -51,16 +51,27 @@ void LaneD::readStateFromFile()
         TraceLog(LOG_WARNING, "Unable to read the file.");
         light = 0; // Default to 0 if file cannot be read
     }
+
+    std::ifstream F("Time.txt");
+    if (F.is_open()) {
+        F >> Time;
+        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
+        TraceLog(LOG_INFO,"The value of Time retreived from the file is %d.\n",Time);
+        F.close();
+    } else {
+        TraceLog(LOG_WARNING, "Unable to read the file.");
+    }
 }
 
 void LaneD::update()
 {
     const int screenWidth = GetScreenWidth();
+    const int screenHeight = GetScreenHeight();
     static float LastUpdatedTime=GetTime();
     const int X=475;
 
     float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=10)
+    if(currentTime-LastUpdatedTime>=Time)
     {
         light=(light==0) ? 1 : 0;
 
@@ -97,26 +108,36 @@ void LaneD::update()
 
         if(isActive2[i] == true)
         {
-            // Check if the vehicle has crossed the traffic light
-            bool hasCrossedTrafficLight = (arr2[i] >= X);
-            
-            // If the vehicle has crossed the traffic light, it moves freely
-            if (hasCrossedTrafficLight) 
+            if(i%2==0 && arr2[i]==825)
             {
-                arr2[i] += speed;
+                arr2[i]=825;
+                brr2[i]+=speed;
+                if(brr2[i] + size >=screenHeight)
+                isActive2[i]=false;
             }
-            // If the vehicle hasn't crossed the traffic light, it stops during red light
-            else 
+            else
             {
-                if (light == 1) 
-                {  // Green light: move vehicles
+                // Check if the vehicle has crossed the traffic light
+                bool hasCrossedTrafficLight = (arr2[i] >= X);
+                
+                // If the vehicle has crossed the traffic light, it moves freely
+                if (hasCrossedTrafficLight) 
+                {
                     arr2[i] += speed;
                 }
-            }
-            // Check if the vehicle has collided with the bottom of the screen
-            if (arr2[i] + size >= screenWidth) {
-                printf("Collision detected for the vehicle %d\n", i);
-                isActive2[i] = false;
+                // If the vehicle hasn't crossed the traffic light, it stops during red light
+                else 
+                {
+                    if (light == 1) 
+                    {  // Green light: move vehicles
+                        arr2[i] += speed;
+                    }
+                }
+                // Check if the vehicle has collided with the bottom of the screen
+                if (arr2[i] + size >= screenWidth) {
+                    printf("Collision detected for the vehicle %d\n", i);
+                    isActive2[i] = false;
+                }
             }
         }
         

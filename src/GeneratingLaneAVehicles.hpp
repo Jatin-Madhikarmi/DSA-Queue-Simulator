@@ -25,6 +25,7 @@ class LaneA
     std::vector<bool> isActive2; // Activity status of vehicles in the ourgoing lane
     int state; // Number of vehicles (read from file)
     int light;// Reads the light condition from the file
+    int Time;// Reads the time for the light from the file
     void readStateFromFile(); // Read the number of vehicles from file
 };
 

@@ -21,6 +21,9 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(0)));
     const int screenWidth=1600.0f;
     const int screenHeight=800.0f;
+    int time=0;
+    std::string Time;
+    Time="Time.txt";
 
     std::vector <std::string> fileNames={"VehiclesNoA.txt","VehiclesNoB.txt","VehiclesNoC.txt","VehiclesNoD.txt"};
 
@@ -29,16 +32,18 @@ int main()
     for(int i=0;i<4;i++)
     {
         randomValue[i]=GetRandomValue();
+        time+=randomValue[i];
         UpdateFile(randomValue[i],fileNames[i]);
     }
+    UpdateFile(time,Time);
    
-    LaneD vehicleD(100,200,50,300,3,50);
     Lanes lanes;
-    LaneC vehicleC(1500,525,1500,425,3,50);
-    LaneA vehicleA(925, 0,825,0, 3, 50);
-    LaneB vehicleB(625,700,750,700,3,50);
+    LaneA vehicleA(925, 0,750,0, 3, 50);
+    LaneB vehicleB(625,700,825,700,3,50);
+    LaneC vehicleC(1500,525,1500,300,3,50);
+    LaneD vehicleD(100,200,50,425,3,50);
 
-    Vehicles random(925, 0,825,0, 3, 50);
+    Vehicles random(925, 0,725,0, 3, 50);
 
     InitWindow(screenWidth,screenHeight,"MAIN SCREEN");
     SetTargetFPS(20);
@@ -54,10 +59,10 @@ int main()
         BeginDrawing();
         ClearBackground(BLACK);
         lanes.Draw();
-        vehicleA.draw();
-        vehicleD.draw();
+        //vehicleA.draw();
+        //vehicleB.draw();
         vehicleC.draw();
-        vehicleB.draw();
+        vehicleD.draw();
         //random.draw();
         EndDrawing();
     }

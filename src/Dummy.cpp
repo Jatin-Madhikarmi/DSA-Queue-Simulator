@@ -6,7 +6,7 @@
 Vehicles::Vehicles(int x1,int y1,int x2,int y2,int size,int speed):
 x1(925),
 y1(0),
-x2(825),
+x2(725),
 y2(0),
 speed(5),
 size(50)

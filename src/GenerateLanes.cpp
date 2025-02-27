@@ -50,11 +50,6 @@ void Lanes::Draw()
         DrawRectangle(475,175,100,450,RED);
         DrawRectangle(1025,175,100,450,RED);
     }
-
-
-
-
-
     if(trafficLightAB==1)
     {
         DrawRectangle(575,75,450,100,GREEN);
