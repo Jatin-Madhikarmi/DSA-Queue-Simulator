@@ -1,10 +1,9 @@
 #include<raylib.h>
-#include"GenerateLaneDVehicles.hpp"
 #include"GenerateLanes.hpp"
-#include"GenerateLaneCVehicles.hpp"
 #include"GeneratingLaneAVehicles.hpp"
 #include"GeneratingLanesBVehicles.hpp"
-#include"Dummy.hpp"
+#include"GenerateLaneCVehicles.hpp"
+#include"GenerateLaneDVehicles.hpp"
 #include<string.h>
 #include<istream>
 #include<fstream>
@@ -23,8 +22,6 @@ int main()
     const int screenHeight=800.0f;
     float traffictime=0;
 
-    std::string trafficTime;
-    trafficTime="Time.txt";
 
     std::string PriorityTimer;
     PriorityTimer="PriorityLaneTimer.txt";
@@ -45,25 +42,26 @@ int main()
         else
         {
             priorityLaneTime=randomValue[i];
-            if(priorityLaneTime > 5)
+            if(priorityLaneTime > 10)
             {
                 priorityLaneTime=priorityLaneTime * 2;
+                UpdateFile(priorityLaneTime,PriorityTimer);
             }
             
         }
         UpdateFile(randomValue[i],fileNames[i]);
     }
-    traffictime=traffictime/3;//Condition when the priority lane is inacitve;
+
+    //Condition when the priority lane is inacitve;
+    traffictime=traffictime/3;
     traffictime=traffictime*2;
-    UpdateFile(priorityLaneTime,PriorityTimer);
 
     Lanes lanes;
     LaneA vehicleA(925, 0,750,0, 3, 50);
     LaneB vehicleB(625,700,825,700,3,50);
     LaneC vehicleC(1500,525,1500,300,3,50);
     LaneD vehicleD(100,200,50,425,3,50);
-    
-    Vehicles random(925, 0,725,0, 3, 50);
+
 
     InitWindow(screenWidth,screenHeight,"MAIN SCREEN");
     SetTargetFPS(30);
@@ -75,7 +73,6 @@ int main()
         vehicleC.update();
         vehicleD.update();
 
-        random.update();
         BeginDrawing();
         ClearBackground(BLACK);
         lanes.Draw();
@@ -83,7 +80,6 @@ int main()
         vehicleB.draw();
         vehicleC.draw();
         vehicleD.draw();
-        //random.draw();
         EndDrawing();
     }
     CloseWindow();

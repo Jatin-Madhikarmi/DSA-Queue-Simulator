@@ -1,154 +1,149 @@
 #include<raylib.h>
-#include"Dummy.hpp"
-#include<fstream>
+#include "Dummy.hpp"
 #include<istream>
+#include<fstream>
+#include <ctime>
+#include<iostream>
 
-Vehicles::Vehicles(int x1,int y1,int x2,int y2,int size,int speed):
-x1(925),
-y1(0),
-x2(725),
-y2(0),
-speed(5),
-size(50)
+Dummy::Dummy() : x1(575),y1(0),x2(0),y2(175)
 {
-    readStateFromFile(); // Read the number of vehicles from file
-    // Initialize Y positions
-    arr1.resize(state,x1);
-    brr1.resize(state,y1);
-    arr2.resize(state,x2);
-    brr2.resize(state,y2);
-    int coordinates1=0;
-    int coordinates2=0;
-    for(int i=0;i<state;i++)
-    {
-        brr1[i]=y1-coordinates1;
-        coordinates1+=100;
-        brr2[i]=y2-coordinates2;
-        coordinates2+=100;
-    }
-    isActive1.resize(state, true); // Initialize activity status 
-    isActive2.resize(state, true); // Initialize activity status
 }
 
-void Vehicles::readStateFromFile() {
-    std::ifstream file("VehiclesNoA.txt");
-    if (file.is_open()) {
-        file >> state;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
-        file.close();
-    } else {
-        TraceLog(LOG_WARNING, "Unable to read the file.");
-        state = 0; // Default to 0 if file cannot be read
-    }
-
-    std::ifstream File("A&BTrafficLight.txt");
-    if (File.is_open()) {
-        File >> light;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
-        File.close();
-    } else {
-        TraceLog(LOG_WARNING, "Unable to read the file.");
-        light = 0; // Default to 0 if file cannot be read
-    }
-}
-
-void Vehicles::update()
+void Dummy::Update(int traffictime)
 {
-    const int screenWidth=GetScreenWidth();
-    const int screenHeight=GetScreenHeight();
-    static float LastUpdatedTime=GetTime();
-    const int Y=275;
-
-    float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=10)
+    const int originalTime = traffictime;
+    int VehiclesAno = 0;  // No need for static
+    bool isPriority = false;
+    
+    // Read vehicle count
+    std::ifstream VehiclesA("VehiclesNoA.txt");
+    if (VehiclesA.is_open())
     {
-        light=(light==0) ? 1 : 0;
+        VehiclesA >> VehiclesAno;
+        VehiclesA.close();
+    }
+    else
+    {
+        TraceLog(LOG_INFO, "Unable to open VehiclesNoA.txt file for reading purposes.\n");
+        return;
+    }
 
-        std::ofstream trafficFile("A&BTrafficLight.txt");
-        if (trafficFile.is_open()) 
+    // Check for priority condition
+    if (VehiclesAno > 5)
+    {
+        std::ifstream fileTime("PriorityLaneTimer.txt");
+        if (fileTime.is_open())
         {
-            trafficFile << light;
-            trafficFile.close();
-        } 
-        else 
-        {
-            printf("Failed to open D&CTrafficLight.txt for writing.\n");
+            isPriority = true;
+            fileTime >> traffictime;
+            fileTime.close();
         }
+        else
+        {
+            TraceLog(LOG_INFO, "Unable to open the priority lane time file for reading purposes.\n");
+        }
+    }
+
+    // Update traffic light states
+    if (isPriority)
+    {
+        trafficLightAB = 1;
+        trafficLightDC = 0;
+
+        // Write to files
+        std::ofstream SetAB("A&BTrafficLight.txt");
+        if (SetAB.is_open())
+        {
+            SetAB << trafficLightAB;
+            TraceLog(LOG_INFO, "TrafficLightAB: %d written to A&BTrafficLight.txt.\n", trafficLightAB);
+            SetAB.close();
+        }
+
+        std::ofstream SetDC("D&CTrafficLight.txt");
+        if (SetDC.is_open())
+        {
+            SetDC << trafficLightDC;
+            TraceLog(LOG_INFO, "TrafficLightDC: %d written to D&CTrafficLight.txt.\n", trafficLightDC);
+            SetDC.close();
+        }
+
+        // Reduce vehicles count
+        std::ofstream Updation("VehiclesNoA.txt");
+        if (Updation.is_open())
+        {
+            VehiclesAno = 5;  // Reset VehiclesAno to 5 to avoid infinite loop
+            Updation << VehiclesAno;
+            Updation.close();
+        }
+        else
+        {
+            TraceLog(LOG_WARNING, "Unable to open VehiclesNoA.txt for updating the new value.\n");
+        }
+
+        if (VehiclesAno <= 5)
+        {
+            isPriority = false;
+            traffictime = originalTime;
+        }
+    }
+
+    // Toggle lights at intervals
+    static float LastUpdatedTime = GetTime();
+    float currentTime = GetTime();
+
+    if (currentTime - LastUpdatedTime >= traffictime)
+    {
+        light = !light;
+        trafficLightAB = light;
+        trafficLightDC = !light;
+
+        // Write updated light states
+        std::ofstream trafficfile("A&BTrafficLight.txt");
+        if (trafficfile.is_open())
+        {
+            trafficfile << trafficLightAB;
+            trafficfile.close();
+        }
+
+        std::ofstream trafficFile("D&CTrafficLight.txt");
+        if (trafficFile.is_open())
+        {
+            trafficFile << trafficLightDC;
+            trafficFile.close();
+        }
+
         LastUpdatedTime = currentTime;
     }
-    for (int i = 0; i < state; i++) 
-    {        
-        if (isActive1[i] == true) 
-        {
-            if(brr1[i]==225)
-            {
-                brr1[i]=225;
-                arr1[i]+=speed;
-                if(arr1[i] + size >= screenWidth)
-                {
-                    isActive1[i]=false;
-                }
-            }
-            else
-            {
-                brr1[i]+=speed;
-            }
-        }
-
-        if (isActive2[i] == true) {
-            // Check if the vehicle is in the special case (divisible by 2 and y-coordinate is 325)
-            if (i % 2 == 0 && brr2[i] == 425) 
-            {
-                // Move the vehicle along the x-axis
-                arr2[i] -= speed;
-        
-                // Ensure the y-coordinate remains constant
-                brr2[i] = 425;
-        
-                // Check if the vehicle has moved off the screen along the x-axis
-                if (arr2[i] <= 0) {
-                    isActive2[i] = false;
-                }
-            }
-            else 
-            {
-                // Handle normal movement and traffic light logic
-                bool hasCrossedTrafficLight = (brr2[i] >= Y);
-        
-                // If the vehicle has crossed the traffic light, it moves freely
-                if (hasCrossedTrafficLight) {
-                    brr2[i] += speed;
-                }
-                // If the vehicle hasn't crossed the traffic light, it stops during red light
-                else {
-                    if (light == 1) {  // Green light: move vehicles
-                        brr2[i] += speed;
-                    }
-                }
-        
-                // Check if the vehicle has collided with the bottom of the screen
-                if (brr2[i] + size >= screenHeight) {
-                    printf("Collision detected for the vehicle %d\n", i);
-                    isActive2[i] = false;
-                }
-            }
-        }
-        
-    }
 }
 
 
-void Vehicles::draw()
+
+
+void Dummy::Draw()
 {
-    for (int i = 0; i < state; i++) 
+    const Color Grey={ 180, 180, 180, 255 };
+    const int screenWidth=GetScreenWidth();
+    const int screenHeight=GetScreenHeight();
+    DrawRectangle(x1,y1,450,screenHeight,Grey);
+    DrawRectangle(x2,y2,screenWidth,450,Grey);
+    if(trafficLightDC==1)
     {
-        if (isActive1[i]) 
-        {
-            DrawRectangle(arr1[i], brr1[i], size, size, BLACK); // Draw the vehicle
-        }
-        if (isActive2[i]) 
-        {
-            DrawRectangle(arr2[i], brr2[i], size, size, BLACK); // Draw the vehicle
-        }
+        DrawRectangle(475,175,100,450,GREEN);
+        DrawRectangle(1025,175,100,450,GREEN);
+    }
+    else
+    {
+        DrawRectangle(475,175,100,450,RED);
+        DrawRectangle(1025,175,100,450,RED);
+    }
+    if(trafficLightAB==1)
+    {
+        DrawRectangle(575,75,450,100,GREEN);
+        DrawRectangle(575,625,450,100,GREEN);
+    }
+    else
+    {
+        DrawRectangle(575,75,450,100,RED);
+        DrawRectangle(575,625,450,100,RED);
     }
 }
