@@ -67,7 +67,51 @@ Easy to Use for dynamic allocation where values are read from the file and memor
 
 # Preview
 It may take some time due to the file being large please be patient.
+
+![Image](https://github.com/user-attachments/assets/ebb981a5-e68f-4761-8450-7aae048d6cc8)
 ![Image](https://github.com/user-attachments/assets/1bae00cd-6660-46bd-bbac-ecbc8ac79d42)
+
+# File Structures
+```bash
+.vscode/ 
+   │── .gitkeep 
+   │── c_cpp_properties.json 
+   │── launch.json 
+   │── settings.json 
+   │── tasks.json 
+lib/ 
+   │── libgcc_s_dw2-1.dll 
+   │── libstdc++-6.dll 
+src/ 
+   │── Dummy.cpp 
+   │── Dummy.hpp 
+   │── GenerateLaneCVehicles.cpp 
+   │── GenerateLaneCVehicles.hpp 
+   │── GenerateLaneDVehicles.cpp 
+   │── GenerateLaneDVehicles.hpp 
+   │── GenerateLanes.cpp 
+   │── GenerateLanes.hpp 
+   │── GeneratingLaneAVehicles.cpp 
+   │── GeneratingLaneAVehicles.hpp 
+   │── GeneratingLaneBVehicles.cpp 
+   │── GeneratingLaneBVehicles.hpp 
+   │── main.cpp 
+VideosGIF/ 
+│── recording.gif │── preview.jpg 
+.gitattributes 
+.gitignore 
+A&BTrafficLight.txt 
+D&CTrafficLight.txt 
+main.code-workspace 
+Makefile 
+PriorityLaneTimer.txt 
+README.md 
+VehiclesNoA.txt 
+VehiclesNoB.txt
+VehiclesNoC.txt 
+VehiclesNoD.txt
+
+```
 
 # How to Use?
 1. Raylib must be installed on your device.If not installed visit <a href="https://www.raylib.com">Raylib Installation.</a>
