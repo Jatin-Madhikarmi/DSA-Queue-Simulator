@@ -76,3 +76,4 @@ It may take some time due to the file being large please be patient.
 ```bash
 git clone https://github.com/Jatin-Madhikarmi/DSA-Queue-Simulator.git
 ```
+3. Open the src folder and browse thorugh the folder and simply run the main.cpp file by pressing fn+F5 
