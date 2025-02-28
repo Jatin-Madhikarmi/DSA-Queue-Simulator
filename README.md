@@ -45,7 +45,7 @@ A real-time traffic intersection simulation that demonstrates traffic management
 Since we were told to implement a Queue which is an ADT and Abstract Data Type (ADT) are defined as a data structure defined by its behavior rather han its implementation. So opted to go for Vector due to 
 Easy to Use for dynamic allocation where values are read from the file and memory are allocated accordingly and don't have to worry about the memory dellocation.
 
-      ```bash
+   ```bash
       arr1.resize(state,x1);//
     brr1.resize(state,y1);
     arr2.resize(state,x2);
@@ -62,7 +62,8 @@ Easy to Use for dynamic allocation where values are read from the file and memor
     //resize function for easy sizing of the vector depedngin upn the value of state which is read from the file.
     //easy access to each elements in the vector.
     //NOTE : x1,y1 represents the x and y coordinates of the lane 3 which are free to turn left on any conditions whether re or green light.
-    & x2 and y2 represents the x and y coordintes of lane 2 which have a restricted movement. 
+    & x2 and y2 represents the x and y coordintes of lane 2 which have a restricted movement.
+```
 
 # Preview
 ![Image](https://github.com/user-attachments/assets/1bae00cd-6660-46bd-bbac-ecbc8ac79d42)
