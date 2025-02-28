@@ -2,43 +2,142 @@
 #include "GenerateLanes.hpp"
 #include<istream>
 #include<fstream>
+#include <ctime>
+#include<iostream>
 
 Lanes::Lanes() : x1(575),y1(0),x2(0),y2(175)
 {
 }
 
-void Lanes::Update()
+void Lanes::Update(int traffictime)
 {
-    std::ifstream file("D&CTrafficLight.txt");
-    if(file.is_open())
+    const int originalTime = traffictime;
+    int VehiclesAno = 0;  // No need for static
+    bool isPriority = false;
+    
+    // Read vehicle count
+    std::ifstream VehiclesA("VehiclesNoA.txt");
+    if (VehiclesA.is_open())
     {
-        file>>trafficLightDC;
-        file.close();
+        VehiclesA >> VehiclesAno;
+        VehiclesA.close();
     }
     else
     {
-        trafficLightDC=1;
-        TraceLog(LOG_WARNING,"Unable to open the file.\n");
+        TraceLog(LOG_INFO, "Unable to open VehiclesNoA.txt file for reading purposes.\n");
+        return;
     }
-    std::ifstream File("A&BTrafficLight.txt");
-    if(File.is_open())
-    {
-        File>>trafficLightAB;
-        File.close();
-    }
-    else
-    {
-        trafficLightAB=0;
-        TraceLog(LOG_WARNING,"Unable to open the file.\n");
 
+    // Check for priority condition
+    if (VehiclesAno > 10)
+    {
+        std::ifstream fileTime("PriorityLaneTimer.txt");
+        if (fileTime.is_open())
+        {
+            isPriority = true;
+            fileTime >> traffictime;
+            fileTime.close();
+        }
+        else
+        {
+            TraceLog(LOG_INFO, "Unable to open the priority lane time file for reading purposes.\n");
+        }
+    }
+
+    std::ifstream initalizeLight("A&BTrafficLight.txt");
+    if(initalizeLight.is_open())
+    {
+        initalizeLight >> light;
+        initalizeLight.close();
+    }
+    else
+    {
+        TraceLog(LOG_INFO,"Unable to open the file A&BTraffiCLight.tx to initialize the value of light.\n");
+    }
+
+    trafficLightAB=light;
+    trafficLightDC=!light;
+
+    // Update traffic light states
+    if (isPriority)
+    {
+        trafficLightAB = 1;
+        trafficLightDC = 0;
+
+        // Write to files
+        std::ofstream SetAB("A&BTrafficLight.txt");
+        if (SetAB.is_open())
+        {
+            SetAB << trafficLightAB;
+            TraceLog(LOG_INFO, "TrafficLightAB: %d written to A&BTrafficLight.txt.\n", trafficLightAB);
+            SetAB.close();
+        }
+
+        std::ofstream SetDC("D&CTrafficLight.txt");
+        if (SetDC.is_open())
+        {
+            SetDC << trafficLightDC;
+            TraceLog(LOG_INFO, "TrafficLightDC: %d written to D&CTrafficLight.txt.\n", trafficLightDC);
+            SetDC.close();
+        }
+
+        // Reduce vehicles count
+        std::ofstream Updation("VehiclesNoA.txt");
+        if (Updation.is_open())
+        {
+            VehiclesAno = 10;  // Reset VehiclesAno to 5 to avoid infinite loop
+            Updation << VehiclesAno;
+            Updation.close();
+        }
+        else
+        {
+            TraceLog(LOG_WARNING, "Unable to open VehiclesNoA.txt for updating the new value.\n");
+        }
+
+        if (VehiclesAno <= 10)
+        {
+            isPriority = false;
+            traffictime = originalTime;
+        }
+    }
+
+    // Toggle lights at intervals
+    static float LastUpdatedTime = GetTime();
+    float currentTime = GetTime();
+
+    if (currentTime - LastUpdatedTime >= traffictime)
+    {
+        light = !light;
+        trafficLightAB = light;
+        trafficLightDC = !light;
+
+        // Write updated light states
+        std::ofstream trafficfile("A&BTrafficLight.txt");
+        if (trafficfile.is_open())
+        {
+            trafficfile << trafficLightAB;
+            trafficfile.close();
+        }
+
+        std::ofstream trafficFile("D&CTrafficLight.txt");
+        if (trafficFile.is_open())
+        {
+            trafficFile << trafficLightDC;
+            trafficFile.close();
+        }
+
+        LastUpdatedTime = currentTime;
     }
 }
+
+
 
 void Lanes::Draw()
 {
     const Color Grey={ 180, 180, 180, 255 };
     const int screenWidth=GetScreenWidth();
-    DrawRectangle(x1,y1,450,800,Grey);
+    const int screenHeight=GetScreenHeight();
+    DrawRectangle(x1,y1,450,screenHeight,Grey);
     DrawRectangle(x2,y2,screenWidth,450,Grey);
     if(trafficLightDC==1)
     {
@@ -50,11 +149,6 @@ void Lanes::Draw()
         DrawRectangle(475,175,100,450,RED);
         DrawRectangle(1025,175,100,450,RED);
     }
-
-
-
-
-
     if(trafficLightAB==1)
     {
         DrawRectangle(575,75,450,100,GREEN);

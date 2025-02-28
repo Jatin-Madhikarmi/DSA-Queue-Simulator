@@ -1,110 +1,149 @@
+#include<raylib.h>
 #include "Dummy.hpp"
-#include <fstream>
+#include<istream>
+#include<fstream>
+#include <ctime>
+#include<iostream>
 
-// Constructor
-vehicle::vehicle(int x, int y, int size, int speed)
-    : x(x), y(y), size(size), speed(speed) {
-    readStateFromFile(); // Read the number of vehicles from file
-    // Initialize Y positions
-    arr.resize(state,y);
-    int coordinates=0;
-    for(int i=0;i<state;i++)
-    {
-        arr[i]=y+coordinates;
-        coordinates+=100;
-    }
-    isActive.resize(state, true); // Initialize activity status
-}
-
-// Read the number of vehicles from file
-void vehicle::readStateFromFile() {
-    std::ifstream file("VehiclesNo.txt");
-    if (file.is_open()) {
-        file >> state;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
-        file.close();
-    } else {
-        TraceLog(LOG_WARNING, "Unable to read the file.");
-        state = 0; // Default to 0 if file cannot be read
-    }
-
-    std::ifstream File("D&CTrafficLight.txt");
-    if (File.is_open()) {
-        File >> light;
-        TraceLog(LOG_INFO, "Number of vehicles: %d", state);
-        File.close();
-    } else {
-        TraceLog(LOG_WARNING, "Unable to read the file.");
-        light = 0; // Default to 0 if file cannot be read
-    }
-}
-
-// Update vehicle positions
-void vehicle::update() {
-    const int screenHeight = GetScreenHeight();
-    static float LastUpdatedTime=GetTime();
-    const int Y=75;
-
-    float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=10)
-    {
-        light=(light==0) ? 1 : 0;
-
-        std::ofstream trafficFile("D&CTrafficLight.txt");
-        if (trafficFile.is_open()) 
-        {
-            trafficFile << light;
-            trafficFile.close();
-        } 
-        else 
-        {
-            printf("Failed to open D&CTrafficLight.txt for writing.\n");
-        }
-        LastUpdatedTime = currentTime;
-    }
-    for (int i = 0; i < state; i++) 
-    {        
-        if (isActive[i] == true) 
-        {
-            // Check if the vehicle has crossed the traffic light
-            bool hasCrossedTrafficLight = (arr[i] >= Y);
-            
-            // If the vehicle has crossed the traffic light, it moves freely
-            if (hasCrossedTrafficLight) 
-            {
-                arr[i] += speed;
-            }
-            // If the vehicle hasn't crossed the traffic light, it stops during red light
-            else 
-            {
-                if (light == 1) 
-                {  // Green light: move vehicles
-                     arr[i] += speed;
-                }
-            }
-            // Check if the vehicle has collided with the bottom of the screen
-            if (arr[i] + size >= screenHeight) {
-                printf("Collision detected for the vehicle %d\n", i);
-                isActive[i] = false;
-            }
-        }
-    }
-}
-
-// Draw vehicles
-void vehicle::draw() 
+Dummy::Dummy() : x1(575),y1(0),x2(0),y2(175)
 {
-    if(light==1)
+}
+
+void Dummy::Update(int traffictime)
+{
+    const int originalTime = traffictime;
+    int VehiclesAno = 0;  // No need for static
+    bool isPriority = false;
+    
+    // Read vehicle count
+    std::ifstream VehiclesA("VehiclesNoA.txt");
+    if (VehiclesA.is_open())
     {
-        DrawRectangle(575,75,450,100,GREEN);
+        VehiclesA >> VehiclesAno;
+        VehiclesA.close();
     }
     else
-    DrawRectangle(575,75,450,100,RED);
-    for (int i = 0; i < state; i++) 
     {
-        if (isActive[i]) 
+        TraceLog(LOG_INFO, "Unable to open VehiclesNoA.txt file for reading purposes.\n");
+        return;
+    }
+
+    // Check for priority condition
+    if (VehiclesAno > 5)
+    {
+        std::ifstream fileTime("PriorityLaneTimer.txt");
+        if (fileTime.is_open())
         {
-            DrawRectangle(x, arr[i], size, size, BLUE); // Draw the vehicle
+            isPriority = true;
+            fileTime >> traffictime;
+            fileTime.close();
         }
+        else
+        {
+            TraceLog(LOG_INFO, "Unable to open the priority lane time file for reading purposes.\n");
+        }
+    }
+
+    // Update traffic light states
+    if (isPriority)
+    {
+        trafficLightAB = 1;
+        trafficLightDC = 0;
+
+        // Write to files
+        std::ofstream SetAB("A&BTrafficLight.txt");
+        if (SetAB.is_open())
+        {
+            SetAB << trafficLightAB;
+            TraceLog(LOG_INFO, "TrafficLightAB: %d written to A&BTrafficLight.txt.\n", trafficLightAB);
+            SetAB.close();
+        }
+
+        std::ofstream SetDC("D&CTrafficLight.txt");
+        if (SetDC.is_open())
+        {
+            SetDC << trafficLightDC;
+            TraceLog(LOG_INFO, "TrafficLightDC: %d written to D&CTrafficLight.txt.\n", trafficLightDC);
+            SetDC.close();
+        }
+
+        // Reduce vehicles count
+        std::ofstream Updation("VehiclesNoA.txt");
+        if (Updation.is_open())
+        {
+            VehiclesAno = 5;  // Reset VehiclesAno to 5 to avoid infinite loop
+            Updation << VehiclesAno;
+            Updation.close();
+        }
+        else
+        {
+            TraceLog(LOG_WARNING, "Unable to open VehiclesNoA.txt for updating the new value.\n");
+        }
+
+        if (VehiclesAno <= 5)
+        {
+            isPriority = false;
+            traffictime = originalTime;
+        }
+    }
+
+    // Toggle lights at intervals
+    static float LastUpdatedTime = GetTime();
+    float currentTime = GetTime();
+
+    if (currentTime - LastUpdatedTime >= traffictime)
+    {
+        light = !light;
+        trafficLightAB = light;
+        trafficLightDC = !light;
+
+        // Write updated light states
+        std::ofstream trafficfile("A&BTrafficLight.txt");
+        if (trafficfile.is_open())
+        {
+            trafficfile << trafficLightAB;
+            trafficfile.close();
+        }
+
+        std::ofstream trafficFile("D&CTrafficLight.txt");
+        if (trafficFile.is_open())
+        {
+            trafficFile << trafficLightDC;
+            trafficFile.close();
+        }
+
+        LastUpdatedTime = currentTime;
+    }
+}
+
+
+
+
+void Dummy::Draw()
+{
+    const Color Grey={ 180, 180, 180, 255 };
+    const int screenWidth=GetScreenWidth();
+    const int screenHeight=GetScreenHeight();
+    DrawRectangle(x1,y1,450,screenHeight,Grey);
+    DrawRectangle(x2,y2,screenWidth,450,Grey);
+    if(trafficLightDC==1)
+    {
+        DrawRectangle(475,175,100,450,GREEN);
+        DrawRectangle(1025,175,100,450,GREEN);
+    }
+    else
+    {
+        DrawRectangle(475,175,100,450,RED);
+        DrawRectangle(1025,175,100,450,RED);
+    }
+    if(trafficLightAB==1)
+    {
+        DrawRectangle(575,75,450,100,GREEN);
+        DrawRectangle(575,625,450,100,GREEN);
+    }
+    else
+    {
+        DrawRectangle(575,75,450,100,RED);
+        DrawRectangle(575,625,450,100,RED);
     }
 }
