@@ -71,6 +71,7 @@ It may take some time due to the file being large please be patient.
 ![Image](https://github.com/user-attachments/assets/ebb981a5-e68f-4761-8450-7aae048d6cc8)
 ![Image](https://github.com/user-attachments/assets/1bae00cd-6660-46bd-bbac-ecbc8ac79d42)
 
+
 # File Structures
 ```bash
 .vscode/ 
@@ -96,8 +97,7 @@ src/
    │── GeneratingLaneBVehicles.cpp 
    │── GeneratingLaneBVehicles.hpp 
    │── main.cpp 
-VideosGIF/ 
-│── recording.gif │── preview.jpg 
+preview.jpg 
 .gitattributes 
 .gitignore 
 A&BTrafficLight.txt 
@@ -112,6 +112,46 @@ VehiclesNoC.txt
 VehiclesNoD.txt
 
 ```
+# Use Files
+The important files that helps for the rendering,updating and deleting.
+In the src folders
+1. Dummy.cpp and Dummy.hpp for checking and implementing and testing purpose mo actaul need
+2. GenerateLaneCVehicle.cpp and GenerateLaneCVehicle.hpp for the rendering,updating and deleting the vehicles in raod C
+3. GenerateDVehciles.cpp and GenerateDVehciles.hpp for the rendering,updating and deleting the vehicles in raod D
+4. GenerateLanes.cpp and  GenerateLanes.hpp for the rendering the roads and also updating the traffic lights.
+5. GeneratingLaneAVehicles.cpp and GeneratingLaneAVehicles.hpp for the rendering,updating and deleting the vehicles in raod A
+6. GeneratingLaneBVehicles.cpp and GeneratingLaneBVehicles.hpp for the rendering,updating and deleting the vehicles in raod B
+
+Outside the src folder
+A&BTrafficLight.txt Stores the traffic light state for the road A and B
+D&CTrafficLight.txt Stores the traffic light state for the road D and C
+PriorityLaneTimer.txt Stores the priority lane timing
+VehiclesNoA.txt Contains the a random number which is the number of vehicles in raod A 
+VehiclesNoB.txt Contains the a random number which is the number of vehicles in raod B
+VehiclesNoC.txt Contains the a random number which is the number of vehicles in raod C
+VehiclesNoD.txt Contains the a random number which is the number of vehicles in raod D
+
+# Functions 
+In the file
+1. GenerateLanes.cpp and  GenerateLanes.hpp the fucntions used are
+   Lanes(); Construtor fucntion for initializing the coordinates.
+   void Update(int); Checks whether to use the prioritytimer or normal traffic timer and updates the traffcilight state in the A&BTrafficLight.txt and D&CTrafficLigh.txt and use those updated values to continously to render the traffic                       light onto the screen.
+   void Draw(); Firstly draws the lane and the light traffic light condition.
+   i.e Whenever Update() chagnes it also affects the Draw() and also A&BTrafficLight.txt, D&CTrafficLight.txt
+
+2.GenerateLaneCVehicle.cpp and GenerateLaneCVehicle.hpp the function used are:
+   LaneC(int x1,int y1,int x2,int y2,int speed,int size); x1,y1 represents the x,y coordinate for the vehicle that are free to turn left. x2,y2 represents the x,y cordinate for the outgoing vehicles, speed and size refers to the speee                                                             and size of the vechicle respectively.
+   void readStateFromFile(); Reads the value in the file D&CTrafficLight.txt for the trafficlight state.
+   void update(); Updates the vehicles position depending uopn the value in the D&CTrafficLight.txt file and also responsible for deleting the vehciles (dequeue process) from the screen.
+   void draw(); Renders the vehcile in accordance to the update() fucntion
+
+<B>NOTE: The files responsible for the creating,updating and deleting the vehicles all have the same fucntion.Yes,Inheritance can be used in such case but some bugs occurred so created separate files whilist having the same functins.
+For road A reads the file A&BTrafficLight.txt
+For road B reads the file A&BTrafficLight.txt
+For road C reads the file D&CTrafficLight.txt
+For road D reads the file D&CTrafficLight.txt
+</B>
+
 
 # How to Use?
 1. Raylib must be installed on your device.If not installed visit <a href="https://www.raylib.com">Raylib Installation.</a>
