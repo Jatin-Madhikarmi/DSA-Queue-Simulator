@@ -10,9 +10,9 @@ A real-time traffic intersection simulation that demonstrates traffic management
 1. Raylib must be installed on your device.If not installed visit <a href="https://www.raylib.com">Raylib Installation.</a>  
 2. Clone though <B>git clone https://github.com/Jatin-Madhikarmi/DSA-Queue-Simulator.git</B> 
 
-<p align="center">
-🎥 <video src="C:\Users\jatin\Videos\Screen Recordings/FinalRecording.mp4" controls title="Title">Demonstration</video>
-</p>
+
+![Demo](C:\Users\jatin\Videos\Screen Recordings\recording.gif)
+![Demo](C:\Users/jatin/Videos/Screen Recordings/recording.gif)
 
 <!-- <br>
 <br>
