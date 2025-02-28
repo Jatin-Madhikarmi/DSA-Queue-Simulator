@@ -51,7 +51,6 @@ int main()
         }
         UpdateFile(randomValue[i],fileNames[i]);
     }
-
     //Condition when the priority lane is inacitve;
     traffictime=traffictime/3;
     traffictime=traffictime*2;
