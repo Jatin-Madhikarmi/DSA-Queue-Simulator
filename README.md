@@ -10,9 +10,11 @@ A real-time traffic intersection simulation that demonstrates traffic management
 1. Traffic Time
    (BL2, CL3, DL4) are the lanes from which the traffictime is calculated,the formula for it is (BL2 + CL3 + DL4)/3 *2  
    Whereas in the case of priorityLaneTime it calulated by the multiplying by 2 i.e priorityLaneTime*2
-2. For the generation of the vehicles for each of the lane used a random number generated through the srand and rand function by adding the header files #include<cstdlib> and #include<ctime>.
+2. For the generation of the vehicles for each of the lane used a random number generated through the srand and rand function by adding the header files #include<cstdlib> and          
+   #include<ctime>.
 3. For the Traffic Light Condition ,used either the traffictime for normal lane condition or priorityLaneTime for priority lane condition and rendered the lights accrodingly.
-4. Used File Handlings for most parts of the programs such as Traffic Light for a priority lane conditions and after generating a random numbers we wrote them to the file and read them for the rendering the vehiles.
+4. Used File Handlings for most parts of the programs such as Traffic Light for a priority lane conditions and after generating a random numbers we wrote them to the file and read them for 
+   the rendering the vehiles.
    Code Snippet
 
      ```bash
