@@ -68,26 +68,6 @@ void LaneA::update()
     const int screenHeight=GetScreenHeight();
     const int Y=275;
 
-
-    // float currentTime=GetTime();
-    // if(currentTime-LastUpdatedTime>=10)
-    // {
-    //     light=(light==0) ? 1 : 0;
-
-    //     std::ofstream trafficFile("A&BTrafficLight.txt");
-    //     if (trafficFile.is_open()) 
-    //     {
-    //         trafficFile << light;
-    //         trafficFile.close();
-    //     } 
-    //     else 
-    //     {
-    //         printf("Failed to open A&BTrafficLight.txt for writing.\n");
-    //     }
-
-    //     LastUpdatedTime = currentTime;
-    // }
-
     std::ifstream File("A&BTrafficLight.txt");
     if(File.is_open())
     {

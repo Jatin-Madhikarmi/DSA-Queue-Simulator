@@ -22,7 +22,7 @@ size(50)
     for(int i=0;i<state;i++)
     {
         arr1[i]=x1-coordinates1;
-        coordinates1+=100;
+        coordinates1+=1000;
         arr2[i]=x2-coordinates2;
         coordinates2+=100;
     }

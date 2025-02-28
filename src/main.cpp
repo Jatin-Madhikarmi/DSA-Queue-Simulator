@@ -22,23 +22,41 @@ int main()
     const int screenWidth=1600.0f;
     const int screenHeight=800.0f;
     float traffictime=0;
+
     std::string trafficTime;
     trafficTime="Time.txt";
 
+    std::string PriorityTimer;
+    PriorityTimer="PriorityLaneTimer.txt";
+    
     std::vector <std::string> fileNames={"VehiclesNoA.txt","VehiclesNoB.txt","VehiclesNoC.txt","VehiclesNoD.txt"};
-
+    
     std::vector<int>randomValue(fileNames.size());
-
+    
+    float priorityLaneTime=0.0f;
+    
     for(int i=0;i<4;i++)
     {
         randomValue[i]=GetRandomValue();
-        traffictime+=(randomValue[i]);
+        if(i!=0)
+        {
+            traffictime+=(randomValue[i]); // The traffic light timings are only considered for the roads B,C and D 
+        }
+        else
+        {
+            priorityLaneTime=randomValue[i];
+            if(priorityLaneTime > 5)
+            {
+                priorityLaneTime=priorityLaneTime * 2;
+            }
+            
+        }
         UpdateFile(randomValue[i],fileNames[i]);
     }
-    traffictime=traffictime/3;
+    traffictime=traffictime/3;//Condition when the priority lane is inacitve;
     traffictime=traffictime*2;
-    UpdateFile(traffictime,trafficTime);
-    
+    UpdateFile(priorityLaneTime,PriorityTimer);
+
     Lanes lanes;
     LaneA vehicleA(925, 0,750,0, 3, 50);
     LaneB vehicleB(625,700,825,700,3,50);
@@ -87,5 +105,5 @@ void UpdateFile(int val, std::string fileName)
 
 int GetRandomValue()
 {
-    return(std::rand() %9 +1);
+    return(std::rand() %9 + 5);// Genrates a random number between 5 adn 13
 }

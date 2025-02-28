@@ -13,5 +13,5 @@ class Lanes
     int y2;
     bool trafficLightDC;
     bool trafficLightAB;
-    int light=0;
+    int light=1;
 };

@@ -2,69 +2,140 @@
 #include "GenerateLanes.hpp"
 #include<istream>
 #include<fstream>
+#include <ctime>
+#include<iostream>
 
 Lanes::Lanes() : x1(575),y1(0),x2(0),y2(175)
 {
 }
 
+
+
+//Working Update function();
+// void Lanes::Update(int traffictime)
+// {
+//     static float LastUpdatedTime=GetTime();
+    
+//     float currentTime=GetTime();
+//     if(currentTime-LastUpdatedTime>=traffictime)
+//     {
+//         std::ofstream trafficfile("A&BTrafficLight.txt");
+//         if (trafficfile.is_open()) 
+//         {
+//             trafficfile << light;
+//             trafficfile.close();
+//         } 
+//         else 
+//         {
+//             printf("Failed to open A&BTrafficLight.txt for writing.\n");
+//         }
+
+//         std::ifstream File("A&BTrafficLight.txt");
+//         if(File.is_open())
+//         {
+//             File>>trafficLightAB;
+//             File.close();
+//         }
+//         else
+//         {
+//             trafficLightAB=0;
+//             TraceLog(LOG_WARNING,"Unable to open the file.\n");
+//         }
+
+//         light=(light==0) ? 1 : 0;
+
+//         std::ofstream trafficFile("D&CTrafficLight.txt");
+//         if (trafficFile.is_open()) 
+//         {
+//             trafficFile << light;
+//             trafficFile.close();
+//         } 
+//         else 
+//         {
+//             printf("Failed to open A&BTrafficLight.txt for writing.\n");
+//         }
+
+//         std::ifstream file("D&CTrafficLight.txt");
+//         if(file.is_open())
+//         {
+//             file>>trafficLightDC;
+//             file.close();
+//         }
+//         else
+//         {
+//             trafficLightDC=1;
+//             TraceLog(LOG_WARNING,"Unable to open the file.\n");
+//         }
+//         LastUpdatedTime = currentTime;
+
+//     }
+// }
+
+
 void Lanes::Update(int traffictime)
 {
-    static float LastUpdatedTime=GetTime();
-    
-    float currentTime=GetTime();
-    if(currentTime-LastUpdatedTime>=traffictime)
+    static float LastUpdatedTime = GetTime();
+
+    // Read initial value from A&BTrafficLight.txt
+    std::ifstream Setval("A&BTrafficLight.txt");
+    if (Setval.is_open())
     {
+        Setval >> light;
+        TraceLog(LOG_INFO, "traffiLightAB %d and light %d.\n", trafficLightAB, light);
+        Setval.close();
+    }
+    else
+    {
+        TraceLog(LOG_WARNING, "Unable to open A&BTrafficLight.txt for initializing the value of light.\n");
+    }
+
+    trafficLightAB = light;
+    trafficLightDC = !light;
+
+    float currentTime = GetTime();
+    if (currentTime - LastUpdatedTime >= traffictime)
+    {
+        // Toggle the light state
+        light = (light == 0) ? 1 : 0;
+
+        // Update A&BTrafficLight.txt
         std::ofstream trafficfile("A&BTrafficLight.txt");
         if (trafficfile.is_open()) 
         {
             trafficfile << light;
+            //trafficfile.flush();  // Ensure the data is written to disk immediately
             trafficfile.close();
+            TraceLog(LOG_INFO, "Updated A&BTrafficLight.txt: %d\n", light);
         } 
         else 
         {
-            printf("Failed to open A&BTrafficLight.txt for writing.\n");
+            TraceLog(LOG_WARNING, "Failed to open A&BTrafficLight.txt for writing.\n");
         }
 
-        std::ifstream File("A&BTrafficLight.txt");
-        if(File.is_open())
-        {
-            File>>trafficLightAB;
-            File.close();
-        }
-        else
-        {
-            trafficLightAB=0;
-            TraceLog(LOG_WARNING,"Unable to open the file.\n");
-        }
+        trafficLightAB=light;
 
-        light=(light==0) ? 1 : 0;
-
+        light = (light == 0) ? 1 : 0;
+        // Write the same updated value to D&CTrafficLight.txt
         std::ofstream trafficFile("D&CTrafficLight.txt");
         if (trafficFile.is_open()) 
         {
-            trafficFile << light;
+            trafficFile << trafficLightAB;
+            //trafficFile.flush();  // Ensure the data is written to disk immediately
             trafficFile.close();
+            TraceLog(LOG_INFO, "Updated D&CTrafficLight.txt: %d\n", trafficLightAB);
         } 
         else 
         {
-            printf("Failed to open A&BTrafficLight.txt for writing.\n");
+            TraceLog(LOG_WARNING, "Failed to open D&CTrafficLight.txt for writing.\n");
         }
 
-        std::ifstream file("D&CTrafficLight.txt");
-        if(file.is_open())
-        {
-            file>>trafficLightDC;
-            file.close();
-        }
-        else
-        {
-            trafficLightDC=1;
-            TraceLog(LOG_WARNING,"Unable to open the file.\n");
-        }
+        trafficLightDC=light;
+
+        // Update the last updated time
         LastUpdatedTime = currentTime;
-
     }
 }
+
 
 
 void Lanes::Draw()
