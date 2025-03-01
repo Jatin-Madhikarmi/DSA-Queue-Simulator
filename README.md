@@ -3,12 +3,20 @@ A real-time traffic intersection simulation that demonstrates traffic management
 
 # Features
 1. Vehicle Handling: Vehicles are spwaned into their lanes upon arrival through the x,y coordinate system.
-2. Visualizing of the real world traffic junction system.
-3. Implementation of the priroty lane and the Traddic Management Sysytem resposne according to various conditions.
+2. Visualizing of the real world traffic junction system with four roads each containing four lanes.
+3. The four lanes are
+   <ul>
+      The lanes where vehicles can freely turn left. (Lane 3)
+      The outgoing lane where vehicles obey the traffic light and proceed to another road.(Lane 2 or Lane 2 Outgoing)
+      The incoming lane where vehicles from other road follow the traffic light and enter this road.(Lane 2 or Lane 2 incoming)
+      The incoming vehicles from another road that were allowed to turn left without restriction. (Lane 3)
+   </ul>
+5. Implementation of the priroty lane and the Traddic Management Sysytem resposne according to various conditions.
+   
 
 # Algoritms
 1. Traffic Time
-   (BL2, CL3, DL4) are the lanes from which the traffictime is calculated,the formula for it is (BL2 + CL3 + DL4)/3 *2  
+   (B, C, D) are the roads from which the traffictime is calculated,the formula for it is (B + C + D)/3 *2  
    Whereas in the case of priorityLaneTime it calulated by the multiplying by 2 i.e priorityLaneTime*2
 2. For the generation of the vehicles for each of the lane used a random number generated through the srand and rand function by adding the header files #include<cstdlib> and          
    #include<ctime>.
